@@ -1,0 +1,246 @@
+TODO 
+
+
+At the back end we will use 
+Spring Boot 3
+Spring Security 6
+JWT
+Spring Data JPA(Hibernate 6)
+MySQL database
+IntelliJ idea
+Maven as build tool.
+postman client to test the rest APIs.
+
+
+At the front end we are going to use Reactjs 18 plus
+Vite JS as a build tool
+Bootstrap CSS framework to style the web pages.
+JavaScript
+NPM as a package manager.
+Visual Studio code to develop the React application
+Axios Http library to make a Http call in a React application.
+
+
+
+=========================
+let's quickly create packaging structure for our spring boot application.
+So go to SRC folder and then go to base package(E:\SpringBoot\todo-management\src\main\java\sk\todo) over here and right click on base package new and then
+choose package.
+package name as entity. Within entity package, we keep all the entities.
+repository - Within a repository package, We keep all the spring data JPA repositories.
+service - We keep all the interfaces and classes related to service layer.
+controller - spring rest controllers.
+dto - dto related classes.
+utils package - utility classes.
+mapper package - to map classes from entity to DTO and Dto to entity.
+
+
+configure mysql in spring boot application
+=======================
+1. create database in mysql server
+
+create database todo_management;
+
+in application.properties specify the details
+
+Create Todo JPA entity,
+@Entity to specifyit it as JPA entity.
+@Table(name = "todos") -  to specify table details.
+    @Id - to mention the primary key
+	@GeneratedValue(strategy = GenerationType.UUID)
+ to mention the primary key generation strategy.
+ 	@GeneratedValue(strategy = GenerationType.IDENTITY) - provides the primary key as auto increement. 
+	
+	@Column for column mapping.
+	
+	 if we don't specify @Column annotation for this description field then JPA will create a column name as a same as this field name.
+
+	
+Create public interface TodoRepository  extends JpaRepository<Todo, UUID>  and TodoDTO class
+============
+ where are the CRUD methods and where is the implementations for those CRUD methods?
+Well, if you go see 
+JpaRepository interface extends ListCrudRepository interface.
+And ListCrudRepository interface extends CrudRepository interface.
+And this CrudRepository interface provides all the CRUD methods to perform CRUD database operations With respect to the JPA entity.
+Okay, now in our case the JPA entities Todo entity.
+Now by looking into this CrudRepository interface, we can see that this CrudRepository interface
+provides all the CRUD methods to perform CRUD database operations.
+And next, if you go back to JpaRepository Interface, this repository interface provides additional
+methods to perform bulk operations
+Okay.
+
+Next, you might be wondering where is the implementation for these interfaces and its methods?
+see the implementations of JpaRepository interface notice here SimpleJpaRepository class.
+Well, SimpleJpaRepository class is a class that implements JpaRepositoryImplementation.
+interface, and if you go inside this interface you can see
+JpaRepositoryImplementation interface extends
+JpaRepository interface.
+It means this SimpleJpaRepository class indirectly implements JpaRepository and CrudRepository
+interface methods.
+For example, if you can see herein SimpleJpaRepository class, deleteById method.
+So this deleteById method is present in a CrudRepository interface, isn't it?
+Next delete() method.
+Next deleteById method.
+All right, so SimpleJpaRepository class will provide implementation for all these, you know, methods.
+All right.
+
+
+@Transactional
+=============
+And if you can notice here, all these public methods are annotated with @Transactional annotation.
+It means spring data JPA by default provide a transaction for all these methods.
+We don't have to, again, you know, provide a transaction management for all these methods
+
+
+
+Service layer
+=============
+create TodoService interface ,
+create impl package under service and create class TodoServiceImpl
+
+should annotate the class with @Service
+and this TodoServiceImpl requires TodoRepository as a dependency.
+So here let's create an instance variable for TodoRepository interface and we are going to use constructor
+based dependency injection to inject this dependency. Well, instead of creating the constructor we can
+use Lombok annotation.
+let's annotate this service class with @AllArgConstructor annotation.
+All right, so this @AllArgConstructor Lombok annotation will automatically create a parameterized constructor for this class.
+
+Controller layer
+===========
+@RestController annotation make this class as a spring MVC rest controllers and within
+this spring MVC rest controller we can define the rest APIs.
+Alright, next let's annotate this class with one more annotation.
+That is @RequestMapping annotation.
+Well, here we are using @RequestMapping annotation to define the base URL for all the rest APIs
+within this TodoController class.
+
+ @PostMapping annotation to map incoming http post request to this particular method.
+    @PostMapping
+    public ResponseEntity<TodoDto> addTodo(@RequestBody TodoDto todoDto){
+
+  @RequestBody annotation at request body annotation extract the JSON object from the HTTP request and then it will convert that JSON into TodoDto Java class object.
+  
+ 
+ModelMapper
+========================== 
+
+replace mapper package using 3rd party modelMapper library
+ https://modelmapper.org/
+ 
+ Add the dependency from https://modelmapper.org/getting-started/ 
+ and 
+ 
+ see mapping example at https://modelmapper.org/getting-started/
+ 
+ 
+  we need to add a model mapper library dependency. So go to browser in a new tab.
+Just type model mapper Maven Dependency
+hit enter and go ahead and click on first link.
+This will navigate to Mavenrepository.com.
+And here just choose the latest version.
+And then copy this model mapper library dependency.
+
+<!-- https://mvnrepository.com/artifact/org.modelmapper/modelmapper -->
+<dependency>
+    <groupId>org.modelmapper</groupId>
+    <artifactId>modelmapper</artifactId>
+    <version>3.2.0</version>
+</dependency>
+
+
+And next, go to our project.
+Go to pom.xml file.
+
+
+And in a dependencies section, just paste it and go ahead and click on this load
+Maven changes icon  to the right side to load this dependency.
+
+
+Second step is we need to configure Spring Bean for a ModelMapper class.
+So go to main entrypoint class E:\SpringBoot\todo-management\src\main\java\sk\todo\TodoManagementApplication.java
+
+@Bean
+	public ModelMapper modelMapper(){
+
+		return new ModelMapper();
+	}
+	
+	
+we need to tell spring IOC container to manage this model mapper object.
+So in order to do that, let's annotate this method with @Bean annotation.
+
+
+Third step is we will inject ModelMapper class object into TodoServiceImpl class and we will call its methods.
+
+
+Build Get Todo Rest API
+==========================
+1st build service layer then controller layer.
+TodoService interface
+TodoServiceImpl
+TodoController
+
+========
+create exception package and create class ResourceNotFoundException 
+to manage exceptions
+like in getTodo in TodoController if the id passed doesnot exists then we have to throw exception in TodoServiceImpl.java
+
+
+in Exceptions:
+
+@ResponseStatus(value = HttpStatus.NOT_FOUND)
+right click on HttpStatus.NOT_FOUND AND goto declaration or usage, u see     
+NOT_FOUND(404, HttpStatus.Series.CLIENT_ERROR, "Not Found"),
+
+
+in TodoServiceImpl
+
+orElseThrow method takes supplier as a functional interface and we have to provide the lambda expression implementation for this supplier functional interface.
+
+
+
+getAllTodos
+=====================
+TodoService
+TodoServiceImpl   ---- getAllTodos
+
+		List<Todo> todos = todoRepository.findAll();
+
+        return todos.stream().map((todo) -> modelMapper.map(todo, TodoDto.class))
+                .collect(Collectors.toList());
+
+	 todos is a list. It has a stream method and stream has a map method. So let's use map method to map one object into another object. In our case, we are going to map Todo entity to TodoDto right. And notice here map method takes function as a functional interface and we want to use lambda implementation to implement this function interface.
+	So let us call map method over here and let's provide the lambda implementation.
+	And finally, let us collect the result by using collect method.
+
+Controller
+
+
+Update Todo 
+==============
+TodoService
+TodoServiceImpl
+	        Todo updatedTodo = todoRepository.save(todo);
+	Well, the save method performs both insert and update operations. For example, if the entity object contains the primary key, then the save method performs update operation. If the entity object does not contain primary key, then this method performs insert operation.
+	
+TodoController
+	@RequestBody annotation will extract the JSON from the HTTP request and then it will convert that JSON into TodoDto java object.
+	
+	
+Delete API
+=========
+TodoService
+TodoServiceImpl
+TodoController
+
+Complete API
+===============
+what is the difference between put and patch?
+
+Well, we use put to update the existing resource and we use patch to update the existing resource partially.
+For example, in case of put mapping we are updating the existing Todo whole object.
+So we are, we are updating the Todo title, description and completed field.
+But in case of patch mapping API, we are only updating the completed field .
+So in order to update the resource partially we use patch.

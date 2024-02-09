@@ -1,0 +1,52 @@
+ 
+Postman -(DTO) <-> Controller layer <-> Service layer <-> repository layer <-> DB
+
+
+DTO - data transfer object
+ Todo entity  has the same fields as a TodoDto
+and then why again we are creating TodoDto over here.
+Well, if you look at our spring boot application architecture over here. We are using three
+layer architecture like controller layer, service layer and repository layer.
+Well, here DTO stands for Data transfer object, and it is one of the widely used design pattern to
+transfer the data between client and server, and we use Todo entity to deal with the database.
+All right, so if we return the Todo entity as a response of the rest API to the client, then there
+may chance that the entity may contain the sensitive information like password, codes.
+Okay, so instead of, you know, returning the entity directly to the client, what we can do is we
+can create a DTO class and whatever the information that client expect, that much of information we can
+transfer using DTO pattern.
+The advantage of using DTO class here is to decouple the entity with client, okay?
+And instead of returning the entity with sensitive information directly to the client, we can use DTO
+to transfer only the required amount of data from, you know, server to the client.
+
+
+==========
+You can always look at decompiled .class files in Target folders.
+
+========
+create exception package and create class ResourceNotFoundException
+
+to manage exceptions
+like in getTodo in TodoController if the id passed doesnot exists then we have to throw exception in TodoServiceImpl.java
+
+in Exceptions:
+
+@ResponseStatus(value = HttpStatus.NOT_FOUND)
+right click on HttpStatus.NOT_FOUND AND goto declaration or usage, u see     
+NOT_FOUND(404, HttpStatus.Series.CLIENT_ERROR, "Not Found"),
+
+
+in TodoServiceImpl
+
+orElseThrow method takes supplier as a functional interface and we have to provide the lambda expression implementation for this supplier functional interface.
+
+
+
+Complete API
+===============
+what is the difference between put and patch?
+
+Well, we use put to update the existing resource and we use patch to update the existing resource partially.
+For example, in case of put mapping we are updating the existing Todo whole object.
+So we are, we are updating the Todo title, description and completed field.
+But in case of patch mapping API, we are only updating the completed field .
+So in order to update the resource partially we use patch.

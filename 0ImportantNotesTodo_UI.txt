@@ -1,0 +1,126 @@
+package.json
+============
+Well, within a package.json file, we can configure all the dependencies and scripts that are required for our React application.
+And most importantly, we can configure the project name and version for the project and also the scripts.
+Well, if you can see the scripts section over here.
+So here we have configured the scripts to run the React application, to build the React application
+and to preview the React application.
+Next, within the dependencies section, you can see the React library and its version and ReactDOM library
+and its version.
+And here are the few devDependencies as well.
+
+
+All right, so this package.json file basically contains all the dependencies and scripts that are required
+for our React application.
+
+
+index.html file
+================
+As we use React to build a single page application.
+So typically you can find a single HTML file in a react application.
+So index.html is a single HTML file in a react application.
+And if you can see here, this HTML file has a body and within that we have a div and it has a ID root.
+Well, whatever the React components that we are going to create in our React application, that components
+will be rendered within this
+div All right. so just remember we use React to build a single page application.
+So React application typically has a single HTML file named index.html file.
+And within this HTML file we have a div, it has an ID root and whatever the react components that we
+are going to create for our React application that components will be rendered within this div.
+All right, next let's move to the Node underscore modules folder.
+Well, whenever we execute NPM install command, then NPM install command will basically download and
+install all the JavaScript packages within this node underscore modules folder.
+Next, we have a public folder. Well, within a public folder.
+We keep all the svg, images files and etc.
+Next, we have a folder within a folder we have App.jsx file.
+Well, within App.jsx file you can see the App component.
+Well, basically App component is a base component or a root component.
+And within this App component, we can import and use the other React components.
+Okay.
+Next, we have a main.jsx file.
+Well, this main.jsx file is the main entry point for our React application.
+And within this main.jsx code, you can see this piece of code.
+Well, if you go to index.html file, within that we have a div, it has a ID root, right.
+And if you go to again main.jsx file and here you can see document dot get element by ID and then
+we have passed the div ID that is root.
+So this createRoot will get the div by using this root ID and then it will call the render method
+to display this App component in a div.
+Okay.
+So basically this index.html has a div with ID root and this root id will be used in a main.jsx
+file here.
+Okay.
+So this ReactDOM dot createRoot method will get the div by using this root id and then it will call
+render method to display this App component within this div.
+Okay, perfect.
+So these are the important folders and files in our React application.
+Okay.
+So apart from these files and folders, we can also see App.css.
+So all the CSS style related, you know, piece of code we can write within this App.css file and
+index.css file.
+All right, perfect.
+Next, let us create a simple react functional component and then we'll understand the flow of our React
+application.
+So go to SRC folder here.
+Within that, create a new file.
+Let's new file name as HelloWorld.jsx
+Well, we are going to write a JSX code within this file.
+That's why the extension JSX.
+Well, you can use either JS or but basically within a react component, we write a JSX code.
+That's why here I'm going to give extension as JSX. Within this file,
+Let's quickly create a React functional component.
+So here just type export default.
+Followed by the function keyword and then the component name.
+So let's give component name as HelloWorld.
+So this is the naming convention to create the component name.
+So make sure that the component name should be, you know, start with a capital letter.
+Next, let us have a return statement and then let's write the code.
+Well, JSX is basically a JavaScript, you know, extension syntax and JSX allows us to write HTML and
+JavaScript code together.
+Okay.
+So basically this function is a JavaScript function, and within this function we can write the HTML
+code here.
+So here just have a H1 element.
+Next, let us write the heading something like HelloWorld Perfect.
+Now, we have created a simple React functional component.
+Next, let us see how to import this React component in a App component.
+So go to App.jsx file.
+So App.jsx file contains a App as a root component.
+So within this root component we can import and use other components.
+Right?
+So here, let me remove this H1 element and let me use HelloWorld component here.
+So here just type HelloWorld and let's close this component and make sure that we import this Hello
+world component at the top.
+Okay, perfect.
+Next, let us save this file and let's go back to browser
+and there we go.
+You can able to see Hello World is printed.
+Next, let me go back to the project and let me go to HelloWorld component.
+And here let me print something like Hello World component and just save it and let's go back to browser
+and here you can see Hello World component.
+All right, so this is how we can create the React component and we can use it in a other components.
+Well, we can use this component as many times as we want in our React application.
+For example, here in App.jsx file, we have used this HelloWorld component once.
+We can also use multiple times.
+For example, let me copy paste over here five times and let me go back to browser and you can see Hello
+world component is displayed five times.
+This is the beauty of react.
+We can create a component and we can use as many times as we want in our React application.
+All right, perfect.
+Now let's quickly understand the React application flow.
+Well, here we have index.html file.
+It has a div with id root. Next, main.jsx file.
+So this piece of code will execute first in a browser and here you can see the code ReactDOM dot create
+root.
+So createRoot method will get the div by using this root ID and then it will call render method to render
+this App component in a div and this App component basically uses HelloWorld component.
+Okay.
+So if you can see in a browser first, the main.jsx file will be executed in a browser and then this
+ReactDOM dot createRoot method will get the div by using this root id well you can see index.html.
+It has a div with id root.
+Right.
+So this root id will be used here and next it will call the render method and it will display the app
+component.
+And the App component contains the HelloWorld component.
+So this is a simple flow of our React application.
+In next lecture, we will see how to install bootstrap CSS library in our React application.
+All right, great.
+I will see you in the next lecture.
