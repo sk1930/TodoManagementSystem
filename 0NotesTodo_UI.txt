@@ -32,3 +32,179 @@ package.json file basically contains all the dependencies and scripts that are r
 for our React application.
 
 
+Add bootstrap to react using npm
+===================
+npm install bootstrap --save
+in main.jsx import 'bootstrap/dist/css/bootstrap.min.css'
+
+create ListTodo Component
+=======================
+1. create React functional component - ListTodoComponent
+in src/components/ListTodoComponent.jsx
+2. Prepare some dummy data to display in a HTML table.
+3. JSX code to display a list of todo's in a HTML table.
+4. import and use ListTodoComponent in an App component.
+5. we'll run and test the React application.
+
+
+in order to use react snippets commands, we have to install the plugin.
+install the plugin
+==========
+From extensions tab - ES7+ React/Redux/React-Native/JS snippets
+
+rafce - react arrow function export component
+
+remove the code from index.css and app.css
+
+
+Connect React app with Get All todos Rest api
+============================
+
+1. First, we're going to install Axios library.
+Well, in order to make the rest API call in a React application, we have to use the third party Http library.
+And in this project we are going to use Axios third-party http library to make an REST API call in our React application.
+2. Next, we'll create src/services/TodoService.js file and within this file we are going to write a rest client code to make an Rest API call using Axios API.
+3. And next we will change ListTodoComponent to display response of the rest API.
+
+
+
+install axios
+===========
+npm install axios --save 
+useEffect Hook
+=============
+
+let us useEffect hook to perform the side effects in this functional components.
+Well, whenever you want to make a REST API call or the Ajax call in a react functional component, you can use useEffect hook.
+Okay, so if you use class component, then you use, you know, ComponentDidMount and ComponentDidUpdate
+lifecycle methods, right?
+But in functional components, we can't use these lifecycle methods.
+We have to use useEffect hook to perform, fetching the data or making the rest API call or, making the Ajax calls.
+So here, let me show you how to useEffect hook to fetch the data or to make the rest API call.
+
+    useEffect(()=>{},[])
+
+
+Next, you can see the syntax of the useEffect hook.
+First parameter is the callback function and second is dependency list.
+So here let's have a callback function as a first parameter.
+And second parameter is a dependency list.
+So as of now there is no no dependency list for this useEffect hook.
+Next, within this object we can write the code to make the REST API call.
+So we have already made a REST API call using Axios library in a TodoService so we can simply call this get
+all todos method in a useEffect hook.
+
+So here what we will do, we'll create a separate function and let's call it as listTodos.
+And within this function let's call getAllTodos method from TodoService.js file.
+
+
+    const [todos,setTodos] = useState([])
+
+    function listTodos()
+    {
+        getAllTodos().then((response)=>{
+            setTodos(response.data);
+        }).catch(error=>{console.error(error);
+        })
+    }
+
+    useEffect(()=>{
+        listTodos();
+    },[])
+	
+Next, getAllTodos and then call its then method and then method takes a callback function.
+So here what we'll do, we'll have a response object.
+Next, we need to store the response of the rest API in a todos state variable.
+For that we can use setTodos method.
+So todos is a state variable and setTodos is a function that we can use to update the state variable.
+So here just call setTodos and then response dot data.
+Perfect.
+Next, we can also have a catch block and then we can display the error.
+So here let's have a error object and then arrow function and then console.error and then pass error object.
+
+
+Make sure to add 
+@CrossOrigin("*") to TodoController.java 
+it means all the clients can be able to access the rest apis 
+
+
+Adding header and footer to react app
+====================
+1. create a src/components/HeaderComponent.jsx as a functional component and then we'll import and
+use this HeaderComponent in an App component.
+Next, we'll create a FooterComponent as a functional component, and then we'll import and use footer
+component in an App component.
+in app.css add style for Footer
+
+
+Configure routing in react app
+===============
+1. install react-router-dom library using npm
+npm install react-router-dom --save
+
+2. configure routing in app component -- 
+import { BrowserRoute,Routes,Route } from 'react-router-dom'
+3. configure route for ListTodoComponent
+
+Add Todo Feature
+============
+1. Create a react functional component named TodoComponent.
+2. add add Todo button in a ListTodoComponent page.
+	use useNavigate hook 
+3. configure the route for TodoComponent in App.jsx
+
+Add TodoFeature - Form Handling
+=====================
+
+1. We will define state variables such as title, description and completed in a TodoComponent using useState hook.
+2. design Add Todo Form using HTML and bootstrap.
+3. create a JavaScript function to handle onClick event.
+
+Connect React To Add Todo REST API
+===============
+1. In our TodoService, we will write code to call Add Todo rest
+API using Axios.
+2. change TodoComponent to call TodoService method.
+3. navigate to list of todos page after form submission done.
+
+
+update Todo feature
+=======================
+we are going to add update button, title and route.
+1. add update button to list Todo's page,
+2.  configure route for update Todo in a App component 
+3. change the title dynamically.
+
+
+
+Connect React App to Get Todo REST API
+===================================
+1. In TodoService, We are going to write a rest client code to call get Todo rest API using Axios API.
+2. use useEffect hook to populate the Todo data in the form for update in TodoComponent
+
+Connect React App to Update Todo REST API
+======================
+
+1. In TodoService, we are going to write a rest client code to call update Todo REST API using the Axios.
+2. change TodoComponent.saveOrUpdateTodo method to perform both add and
+update Todo operations.
+
+Delete feature
+===================
+1. in our TodoService we will write a rest client code to call Delete Todo REST API using Axios.
+2. add a Delete button to list Todos table.
+3. create a JavaScript function to handle Delete button event
+
+
+Complete Todo feature 
+====================
+1. TodoService we are going to write our client code to call Complete Todo REST API using Axios.
+2. Add complete button to list todos table.
+3. create a JavaScript function to handle complete button event.
+
+
+incomplete Todo feature
+=============
+1. TodoService, we will write a rest client code to call incomplete Todo REST API using Axios.
+2. Add an incomplete button to list todos table.
+3. create a JavaScript function to handle inComplete button event.

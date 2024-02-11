@@ -23,28 +23,38 @@ And if you can see here, this HTML file has a body and within that we have a div
 Well, whatever the React components that we are going to create in our React application, that components
 will be rendered within this
 div All right. so just remember we use React to build a single page application.
-So React application typically has a single HTML file named index.html file.
-And within this HTML file we have a div, it has an ID root and whatever the react components that we
-are going to create for our React application that components will be rendered within this div.
-All right, next let's move to the Node underscore modules folder.
-Well, whenever we execute NPM install command, then NPM install command will basically download and
-install all the JavaScript packages within this node underscore modules folder.
-Next, we have a public folder. Well, within a public folder.
+
+node_modules
+==========
+whenever we execute NPM install command, then NPM install command will basically download and
+install all the JavaScript packages within this node_modules folder.
+public folder
+===============
 We keep all the svg, images files and etc.
-Next, we have a folder within a folder we have App.jsx file.
+SRC folder
+=============
+App.jsx file
+===========
 Well, within App.jsx file you can see the App component.
 Well, basically App component is a base component or a root component.
 And within this App component, we can import and use the other React components.
-Okay.
-Next, we have a main.jsx file.
-Well, this main.jsx file is the main entry point for our React application.
+
+main.jsx file
+================
+main.jsx file is the main entry point for our React application.
 And within this main.jsx code, you can see this piece of code.
 Well, if you go to index.html file, within that we have a div, it has a ID root, right.
-And if you go to again main.jsx file and here you can see document dot get element by ID and then
+And if you go to again main.jsx file and here you can see 
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+)
+
 we have passed the div ID that is root.
 So this createRoot will get the div by using this root ID and then it will call the render method
 to display this App component in a div.
-Okay.
+
 So basically this index.html has a div with ID root and this root id will be used in a main.jsx
 file here.
 Okay.
@@ -52,13 +62,14 @@ So this ReactDOM dot createRoot method will get the div by using this root id an
 render method to display this App component within this div.
 Okay, perfect.
 So these are the important folders and files in our React application.
-Okay.
-So apart from these files and folders, we can also see App.css.
+
+App.css
+=============
 So all the CSS style related, you know, piece of code we can write within this App.css file and
 index.css file.
-All right, perfect.
-Next, let us create a simple react functional component and then we'll understand the flow of our React
-application.
+
+
+Next, let us create a simple react functional component and then we'll understand the flow of our React application.
 So go to SRC folder here.
 Within that, create a new file.
 Let's new file name as HelloWorld.jsx
@@ -104,8 +115,11 @@ For example, let me copy paste over here five times and let me go back to browse
 world component is displayed five times.
 This is the beauty of react.
 We can create a component and we can use as many times as we want in our React application.
-All right, perfect.
-Now let's quickly understand the React application flow.
+
+
+React application flow.
+=============================
+
 Well, here we have index.html file.
 It has a div with id root. Next, main.jsx file.
 So this piece of code will execute first in a browser and here you can see the code ReactDOM dot create
@@ -124,3 +138,56 @@ So this is a simple flow of our React application.
 In next lecture, we will see how to install bootstrap CSS library in our React application.
 All right, great.
 I will see you in the next lecture.
+
+
+
+useEffect Hook
+=============
+
+let us useEffect hook to perform the side effects in this functional components.
+Well, whenever you want to make a REST API call or the Ajax call in a react functional component, you can use useEffect hook.
+Okay, so if you use class component, then you use, you know, ComponentDidMount and ComponentDidUpdate
+lifecycle methods, right?
+But in functional components, we can't use these lifecycle methods.
+We have to use useEffect hook to perform, fetching the data or making the rest API call or, making the Ajax calls.
+So here, let me show you how to useEffect hook to fetch the data or to make the rest API call.
+
+    useEffect(()=>{},[])
+
+
+Next, you can see the syntax of the useEffect hook.
+First parameter is the callback function and second is dependency list.
+So here let's have a callback function as a first parameter.
+And second parameter is a dependency list.
+So as of now there is no no dependency list for this useEffect hook.
+Next, within this object we can write the code to make the REST API call.
+So we have already made a REST API call using Axios library in a TodoService so we can simply call this get
+all todos method in a useEffect hook.
+
+So here what we will do, we'll create a separate function and let's call it as listTodos.
+And within this function let's call getAllTodos method from TodoService.js file.
+
+
+    const [todos,setTodos] = useState([])
+
+    function listTodos()
+    {
+        getAllTodos().then((response)=>{
+            setTodos(response.data);
+        }).catch(error=>{console.error(error);
+        })
+    }
+
+    useEffect(()=>{
+        listTodos();
+    },[])
+	
+Next, getAllTodos and then call its then method and then method takes a callback function.
+So here what we'll do, we'll have a response object.
+Next, we need to store the response of the rest API in a todos state variable.
+For that we can use setTodos method.
+So todos is a state variable and setTodos is a function that we can use to update the state variable.
+So here just call setTodos and then response dot data.
+Perfect.
+Next, we can also have a catch block and then we can display the error.
+So here let's have a error object and then arrow function and then console.error and then pass error object.
