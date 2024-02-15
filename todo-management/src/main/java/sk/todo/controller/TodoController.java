@@ -4,6 +4,7 @@ package sk.todo.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import sk.todo.dto.TodoDto;
 import sk.todo.service.TodoService;
@@ -21,6 +22,7 @@ public class TodoController {
 
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TodoDto> addTodo(@RequestBody TodoDto todoDto) {
 
         /*
@@ -52,6 +54,7 @@ public class TodoController {
     // Build Get Todo REST API
 
     @GetMapping("{id}")
+    @PreAuthorize("hasRole('ADMIN','USER')")
     public ResponseEntity<TodoDto> getTodo(@PathVariable("id") UUID todoId) {
 
         TodoDto todoDto = todoService.getTodo(todoId);
@@ -94,6 +97,7 @@ Failed to convert value of type 'java.lang.String' to required type 'java.util.U
 
     // Build Get All Todos REST API
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN','USER')")
     public ResponseEntity<List<TodoDto>> getAllTodos() {
         List<TodoDto> todos = todoService.getAllTodos();
 
@@ -136,6 +140,7 @@ Failed to convert value of type 'java.lang.String' to required type 'java.util.U
 
     // Build Update Todo REST API
     @PutMapping("{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TodoDto> updateTodo(@RequestBody TodoDto todoDto, @PathVariable("id") UUID todoId) {
         TodoDto updatedTodo = todoService.updateTodo(todoDto, todoId);
         return ResponseEntity.ok(updatedTodo);
@@ -146,6 +151,7 @@ Failed to convert value of type 'java.lang.String' to required type 'java.util.U
 
     // Build Delete Todo REST API
     @DeleteMapping("{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteTodo(@PathVariable("id") UUID todoId){
         todoService.deleteTodo(todoId);
         return ResponseEntity.ok("Todo deleted successfully!.");
@@ -154,6 +160,7 @@ Failed to convert value of type 'java.lang.String' to required type 'java.util.U
 
     // Build Complete Todo REST API
     @PatchMapping("{id}/complete")
+    @PreAuthorize("hasRole('ADMIN','USER')")
     public ResponseEntity<TodoDto> completeTodo(@PathVariable("id") UUID todoId){
         TodoDto updatedTodo = todoService.completeTodo(todoId);
         return ResponseEntity.ok(updatedTodo);
@@ -173,6 +180,7 @@ Failed to convert value of type 'java.lang.String' to required type 'java.util.U
 
     // Build In Complete Todo REST API
     @PatchMapping("{id}/in-complete")
+    @PreAuthorize("hasRole('ADMIN','USER')")
     public ResponseEntity<TodoDto> inCompleteTodo(@PathVariable("id") UUID todoId){
         TodoDto updatedTodo = todoService.inCompleteTodo(todoId);
         return ResponseEntity.ok(updatedTodo);

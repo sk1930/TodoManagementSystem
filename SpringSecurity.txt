@@ -1,3 +1,10 @@
+Database authentication flow
+======================
+*********
+postman <-Spring Security Filters -> TodoController <-> UserDetailsServiceImplementation <-> User Repository <-> DB(Users and roles).
+
+
+
  secure all these rest APIs using spring security
 and we will implement the role based authorization so users can access these rest APIS based on their role.
 For example, if the user has a role admin, then that user can access all the rest APIs.
@@ -550,3 +557,103 @@ This is how we configure the spring security to provide a public access to the r
 
 140. Method Level Security
 ====================
+
+@EnableMethodSecurity 
+@PreAuthorize annotations.
+
+we can achieve the the same role based authorization using method level security as well.
+Okay, so in case of method level security, we will apply the security at a method level.
+
+So in order to implement the method level security, we have to use two important annotations that is
+
+@EnableMethodSecurity annotation and @PreAuthorize annotation.
+Admin to access, add todo, update todo and delete todo APIs
+ and the remaining rest APIs such as get todo, get todo's,complete todo, in complete todo rest
+APIs can be accessible by all the users.
+
+
+So let's go to our project in IntelliJ IDEA and go to spring Security config class and go to security filter
+chain method over here.
+Here we have written a logic to implement role based authorization using authorize.requestMatchers
+
+SpringSecurityConfig is for Role based security
+SpringSecurityConfig1 is for Method level security.
+
+
+
+So here, let me comment out this line of code as well.
+Well, in order to enable method level security in our spring boot application, 
+first we need to annotate
+this SpringSecurityConfig class with @EnableMethodSecurity annotation.
+Next this annotation provides @PreAuthorize annotation to provide a method level security
+So go to TodoController. Within a TodoController, we have rest APIs
+So here we have addTodo rest API.
+So here let us annotate this method with 
+    @PreAuthorize("hasRole('ADMIN')")
+
+
+So this is how we use @PreAuthorize annotation to provide the method level security.
+
+
+Similarly let us also secure update todo and delete todo rest APIs.
+
+
+Next requirement is the remaining rest
+APIs is like get todo, complete todo and incomplete todo so
+these rest APIs can be accessible by any user who has a role, either admin or user.
+    @PreAuthorize("hasRole('ADMIN','USER')")
+
+let us go ahead and let us rerun our spring boot application and let us test all these use cases.
+let's go to Postman client.
+And here let us first test add todo rest API.
+
+Next go to authentication
+And here let us choose type as basic auth and then just pass saikrishna user first.
+So let us first test the negative use-case. Password as a password
+and then click on Send button
+and there we go.
+We got 403 forbidden error because the Add Todo Rest API is only accessible to admin user isn't it?
+But we are passing the saikrishna user who has a role user.
+That's why we got 403 forbidden error.
+Okay.
+Next, let us pass the admin user credentials.
+
+We got the response of the REST API.
+It means admin user only has access to add todo rest API.
+
+Test getTodo, getAllTodos,deleteTodo,updateTodo,completeTodo,incompleteTodo
+
+Most of the developer prefer method level security to secure the rest APIs based using role based authorization.
+
+
+
+141. Database Authentication Overvie
+=================
+
+Well, in case of database authentication, we are going to store the users and roles in a database.
+Well, earlier we were storing the users and roles in a in-memory object.
+ In SpringSecurityConfig class we have UserDetailsService bean object returned by userDetailsService() method 
+ where users and roles are created in memory using User.builder method.
+ 
+ 
+But now what we will do, we will create user and role JPA entities.
+JPA  - Java Persistence API.
+
+So these entities will map to the users and roles in a database.
+And then we will store users in a users table roles in a roles table, and we will establish many to
+many mapping between users and roles.
+So basically one user can have multiple roles and 
+same role can be assigned to multiple users.
+
+So this is a many to many mapping we are going to implement in case of database authentication.
+Okay.
+Well, whenever a client sends a request with username and password in header of the request, then we will
+basically extract the username and password from the header and will authenticate that username and
+password with database username and password
+
+
+Database authentication flow
+======================
+*********
+postman <-Spring Security Filters -> TodoController <-> UserDetailsServiceImplementation <-> User Repository <-> DB(Users and roles).
+
