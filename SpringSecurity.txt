@@ -1,0 +1,552 @@
+ secure all these rest APIs using spring security
+and we will implement the role based authorization so users can access these rest APIS based on their role.
+For example, if the user has a role admin, then that user can access all the rest APIs.
+
+If the user has a role user, then that user can only access, Gget Todo, Get All Todos, Complete Todo and incomplete todo rest APIs.
+
+
+what is authentication.
+==================
+Well, authentication is a process of verifying the identity of a user or a system attempting to access a resource.
+Well, here are the few examples for authentication. 
+
+Password based authentication.
+=============
+Well, whenever you want to log into your Gmail account, then you need to enter the email address and password.
+And whenever you want to log into LinkedIn, Facebook, Twitter, then you need to enter the email, ID and password.
+Then only you can able to log into these accounts. 
+
+
+biometric authentication
+===================
+a user scans their fingerprint to unlock their smartphones.
+Well, nowadays smartphones supports biometric authentication as well, so you can use your fingerprint to unlock the smartphones.
+
+multi-factor authentication.
+=================
+
+Let's say if you enable multi-factor authentication in your banking account, then whenever you try
+to log into banking account using username and password, then you will get a OTP via SMS to your phone.
+Then you can enter the OTP.
+Then only you can able to log into the banking account.
+
+
+
+And spring security provides built in support for authentication.
+==========================
+So spring security provides out of the box implementation for authentication.
+We don't have to manually write the code to perform authentication.
+
+authorization.
+====================
+Well, authorization is a process of determining what actions an authenticated user or system is allowed
+to perform on a resource.
+In a simple term, authorization determines what actions they are allowed to perform once their identity
+has verified.
+role based authorization.
+==============
+Well, consider we have employee management system project that supports multiple roles.
+Like whenever a user logged in with a manager role, then manager can able to perform different operations
+like manager can, you know, approve or reject the employee leave request.
+And whenever user log in with the employee role, then that user can only submit the request,
+Basically, the authorization means once user logged into the system, then what are the resources that user can access
+
+Well, let us take one more example.
+Like we have student management system project, and this project supports multiple roles like teacher,
+student and admin.
+So let us say user logged in with admin role.
+Then that admin user can able to access all the resources of that student management system project because
+the user is admin.
+Next, let us say a user logged in with the student role.
+Then that student can only perform the limited operations like student can edit his or her profile details.
+Student can ask questions to the teacher.
+Student can add the subject.
+So these are the, limited operations the student can perform.
+
+
+And spring security provides a built in support for authorization.
+==========================
+Well, we don't have to write the code manually to implement the authorization.
+
+
+
+Spring security
+==============
+ is a framework that provides authentication, authorization and protection against common
+attacks, with first class support for securing both web and reactive applications.
+Spring security becomes a de facto standard for securing spring based applications.
+
+Spring security is the number one framework for implementing authentication and authorization.
+Well, we can use spring security to secure the web applications, restful web services, and microservices.
+
+Configuration
+============
+we have to add spring boot starter security dependency to spring boot project.
+
+go to pom.xml file and go to dependencies
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		
+ this spring boot starter security dependency
+
+internally aggregates all the required dependencies to implement spring security in a spring boot project.
+
+
+Next, go ahead and click on this load Maven Changes icon to load this spring boot starter security dependency.
+Next, let's go to main endpoint class and let us run the spring boot application and let us see if there
+are any errors or exceptions.
+
+
+
+Well, spring boot auto configuration for spring security provides below features.
+================================
+
+1. Spring boot starter Security.
+Well, whenever we add this spring boot starter security dependency, this dependency aggregates all
+the spring security related dependencies together.
+
+ for example, in a pom.xml file, we have added spring-boot-starter-security dependency there in pom.xml 
+ press ctrl and click on  spring-boot-starter-security
+So this dependency internally aggregates all the spring security related dependencies together and it
+will also manage the version of all the spring security related dependencies.
+
+
+
+2. spring boot auto configuration enables Spring Security's default configuration.
+It means spring Security's default configuration creates a servlet filter as a bean named springSecurityFilterChain bean.
+So this bean is responsible for all the security within our application.
+For example, this bean is responsible for protecting the spring boot application URLs, validating submitted username and passwords and redirecting to the login form and so on.
+
+
+3. form based authentication is enabled.
+Well, by default, spring boot auto configuration enables form based authentication(provides default login and logout features)
+
+4. basic authentication is enabled. so we'll see
+how spring boot auto configuration enables basic authentication a bit later.
+Next, spring boot auto configuration creates a default user with a username as user and randomly generated
+password that is logged to the console.
+Well, in order to test the spring security quickly, spring boot auto configuration provides one default
+user with a username as user and the randomly generated password that is logged to the console.
+5.
+Next, Spring Boot provides a couple of properties to customize the default user's username and password.
+6. it protects the password storage with Bcrypt algorithm 
+7. by default, it also enables Cross site request forgery (CSRF) attack prevention.
+
+
+So in order to test the spring security default configuration, Spring Boot provides a default user
+with a username and user and randomly generated password that is logged into the console.
+So if you go to our project when u start the project by running 
+TodoManagementApplication
+ go to console and here you can see this is the randomly generated password
+that is logged to the console.
+Okay, next let's go to browser and in a new tab, just type http://localhost:8090/api/todos.
+So here basically we are trying to access this rest API.
+So as soon as we try to access the rest API, it redirected to the login page.
+It means whenever we add a spring security to our spring boot project, then spring security will secure
+all the URLs.
+Next, let us use spring boot provided default user to login to this application so the default user's
+username is user and the password is randomly generated password.
+So if you go to console, just copy this randomly generated password and paste here, click on sign
+in and again goto http://localhost:8090/api/todos
+u will see response.
+So this is called the form based authentication.
+this is the spring security
+provided out of the box login page to log in to the Spring boot project.
+
+Next,
+In order to log out from the application, you have to type the URL like http://localhost:8080/logout.
+
+So this is called the form based authentication because here we are using login form to log in to the application.
+
+
+we have one more authentication that is 
+=================
+basic Http authentication.
+=================
+In order to use basic authentication, we have to use rest client because in case of basic authentication,
+we have to pass the username and password in the header of the request.
+For example, here we have postman client as a rest client and we can use this postman client to make a basic authentication.
+
+in Get All Todos API request:
+http://localhost:8090/api/todos
+in authorization tab: basic authorization
+username: user
+password: password from console when u run the application in IntelliJ
+
+
+Customizing the default username and password
+=======================
+in resources/application.properties
+
+spring.security.user.name=saikrishna
+spring.security.user.password=password
+
+
+
+in the recent Spring boot 3.1.0 and Spring security 6.1.0 release, the csrf() method has deprecated and exposed a new version of csrf() method.
+Deprecated csrf() method:
+http.csrf().disable()
+New version of csrf() method:
+http.csrf((csrf) -> csrf.disable())
+In the next lecture, please use the below new csrf() method that takes lambda expression implementation to disable the CSRF feature:
+http.csrf((csrf) -> csrf.disable())
+
+
+Configure and understand basic authentication
+========================
+from here there wont be form based authentication, we only use basic authentication.
+
+create a new package config
+create class 
+
+SpringSecurityConfig
+
+
+Next, let us make this class as a java-based configuration by annotating it with @Configuration annotation.
+Well, whenever we annotate a class with @Configuration annotation, then this class becomes a spring Java-based configuration.
+And within this configuration class we can define the spring beans.
+All right, perfect.
+Next, within this class, let's configure SecurityFilterChain bean.
+
+ just have return type as SecurityFilterChain, and then let's give method name as securityFilterChain
+and this method expect HttpSecurity as a parameter.
+So here, let us have return statement and then http it has a build method.
+So this build method returns a DefaultSecurityFilterChain class object and notice here security filter
+chain is a interface and DefaultSecurityFilterChain is a class that implements SecurityFilterChain
+interface.
+So here, just call this build method and notice here the compilation error.
+It says unhandled exception.
+So go ahead and throw the exception to method signature.
+
+
+Next, let us annotate this method with @Bean annotation so that spring container can manage the object
+of DefaultSecurityFilterChain object.
+Okay.
+Perfect.
+Next, within this SecurityFilterChain method, we can configure the spring security.
+For example, here, let's call http, it has csrf() method, so we are not going to use CSRF, so let us
+disable it.
+Next here, let us call authorizeHttpRequests and notice here.
+authorizeHttpRequests takes Customizer as a functional interface and we have to provide the Lambda
+expression implementation for this Customizer functional interface.
+So let us call this authorizeHttpRequests.
+Well, we use authorizeHttpRequests method to authorize all the incoming http request.
+this method takes an implementation of Lambda expression.
+So here let us pass the lambda expression and here is the syntax.
+So this lambda expression takes the argument authorize.
+Next, let us have a lambda symbol and then let us have authorize and then call anyRequest() and then
+authenticated().
+So basically here all the incoming Http request is authenticated by using anyRequest().authenticated()
+method.
+Next here dot http.
+So notice here there are two overloaded Http basic methods.
+So let us call the first one that takes customizer as a method argument and just pass Customizer.withDefaults as a method argument.
+Okay, perfect.
+Now we have configured spring security such a way that we have only enabled the Http basic authentication.
+Okay.
+So in order to confirm this, let us run the spring boot application 
+Next, let's go to browser and here let me open the new tab.
+And here just type http://localhost:8090/api/todos hit enter and there we go.
+You can see the pop up. In case of form based authentication, we are getting login form to log in to
+the application, but here you can see we got the pop up.
+So this is basically a basic authentication.
+
+
+So whenever we try to perform basic authentication using browser, then browser will provide the pop
+up something like this to enter the username password and then browser will pass this username and password
+in header of the request.
+
+In form based authentication we use login form to log in to the application,
+but in case of basic authentication we have to enter the username and password in header of the request.
+So enter the credential we had configured in our application.properties file.
+
+We got the response of the API.
+
+So this is how we can use basic authentication to pass the username password in header of the request.
+
+
+Next, in order to understand how http basic authentication, send the username password in header of
+the request
+What we can do is we can use postman client to call the rest API using basic authentication.
+So let's go to postman client over here and here.
+Let us call this get all Todos rest API.
+And in our authorization we have a basic authentication type and here enter username and password 
+Next click on send button
+and there we go.
+We got the response of the rest API. Next, in order to understand how this postman client send the username
+password in header of the request, what we can do is we can go to headers over here and in headers
+you can see here we have a key value pair and here you can see key as a Authorization and you can see its
+value basic and then followed by base64 encoded value.
+So if you can just copy this base 64 encoded value.
+So just ignore this basic space and just copy this value and go to browser in a new tab.
+Basic c2Fpa3Jpc2huYTpwYXNzd29yZA==
+copy from c2.. to = 
+Just enter Decode base 64 online and choose this first link.
+So basically here we are going to decode the base 64 value.
+So here, just paste it, click on Decode.
+And here you can see the username and password.
+It means whenever we send a request with a basic authentication using postman client, then postman
+client will combine the user and password like this and it will generate the base 64 encoded text out
+of this username and password and it will pass in a header like this.
+Okay.
+So basically postman client will combine the username and password and it will generate the base 64
+encoded text and it will pass in a header like this.
+So this is how basically basic authentication works.
+And one more important point here is this basic authentication is not recommended for production because
+anybody can, you know, decode this base 64 encoded text, for example.
+Here you can see we have used this online tool to decode this base 64 base text and anybody can easily
+get the username password.
+All right.
+So this is one of the disadvantage of basic authentication.
+And over come to this disadvantage.
+Most of the developers uses JWT token based authentication.
+
+
+138. In-Memory Authentication
+========================
+
+
+we will see how to create multiple Users and how to store them in a spring security provided in-memory object.
+So go to SpringSecurityConfig class.
+
+Let's create a spring bean.
+Within that we will create a multiple Users and we will store them in a in-memory object.
+
+    public UserDetailsService userDetailsService(){
+	}
+
+Next, within this method, let's create a couple of Users.
+And then in order to create the User object, just use User class from spring security package.
+It has a builder() method to build the User object.
+Finally, let's call build() method to build the User object.
+Create one more user.
+
+Next, let us store these two Users objects in a spring security provided in memory object of type class InMemoryUserDetailsManage
+class and let us pass the two UserDetails objects.
+
+Now we have created a userDetailsService() method. It returns object of InMemoryUserDetailsManager.
+Next, let spring container to manage the object of this class by making this method as a spring bean.
+So in order to do that, let's annotate this method with @Bean annotation.
+
+Test the changes:  I'm going to stop and rerun the spring boot application.
+
+
+Next, let's go to Postman client and look at here we are calling get all todos rest API.
+
+So go to authorization tab and here just pass Username as saikrishna and password as a password, click on send button
+and notice here we got the, you know, 401.
+Unauthorized status.
+Next, let us go to our project and go to console and notice here we got the error.
+
+java.lang.IllegalArgumentException: There is no PasswordEncoder mapped for the id "null"
+	at org.springframework.security.crypto.password.DelegatingPasswordEncoder$UnmappedIdPasswordEncoder.matches(DelegatingPasswordEncoder.java:289) ~[spring-security-crypto-6.2.1.jar:6.2.1]
+	at
+	
+
+There is no PasswordEncoder mapped for the ID null.
+So if you can notice the code here, we have given the password as a plain text, but basically spring
+security
+expects the password in an encoded format.
+So in order to encode this plain text password, we have to use the PasswordEncoder.
+So here let us create a PasswordEncoder spring bean.
+So just type public and then static.
+So in order to make the object single object, let us use static and then password encoded.
+Let's give method name as PasswordEncoder.
+So PasswordEncoder is the interface.
+Let us give implementation class that is BCryptPasswordEncoder.
+And then let's annotate this method with @Bean annotation.
+Well, notice here we are using BCryptPasswordEncoder implementation of PasswordEncoder and this
+BCryptPasswordEncoder implementation internal uses by Bcrypt algorithm to encode the password.
+Okay, perfect.
+Next, let's go to UserDetailsService method and here let's use passwordEncoder().encode() method
+to encode this plaintext password.
+
+Next, let us go ahead and let us rerun the spring boot 
+Next, let's go to Postman client.
+And now let us make this get all todos rest API.
+And notice here in our basic auth we are passing Username as saikrishna password as a password.
+Click on send button and there we go.
+It means both the Users are working as expected.
+Okay.
+
+
+
+139. Understanding Role-Based Authorization
+====================
+
+
+we have configured the roles for these two Users and what is the use of those roles?
+For example, if you can see SpringSecurityConfig class, within that we have UserDetailsService
+within this method we have configured these two Users and if you can notice here we have configured
+USER role for saikrishna, ADMIN role for admin User, 
+
+
+
+admin role to access, add todo, update todo and delete Todo rest APIs 
+and getTodo,getAllTodos, completeTodo and IncompleteTodo rest APIs can be accessible by all the users.
+
+
+So basically we are going to secure all the Todo resource rest APIs using role based authorization.
+All right, so let's go to our project in IntelliJ idea and go to SpringSecurityConfig class and go
+to securityFilterChain method 
+
+    authorize.anyRequest().authenticated();
+
+Well, notice here we have authenticated anyRequest, but now we are going to implement role based
+authorization.
+So we have to configure the spring security such a way that all the users who have admin role can able
+to access, add todo, update todo and delete Todo rest APIs.
+
+
+authorize.requestMatchers(HttpMethod.POST,"/api/**").hasRole("ADMIN")
+
+So just call authorizeObject.requestMatchers methods.
+So if you can notice here there are overloaded requestMatchers method.
+So let us go and call this first one.
+It takes HttpMethod and String Patterns
+So let us call this method and here we need to pass the Http method.
+So just type HttpMethod.POST as first argument.
+Second argument,
+We need to pass the URL that is /api/**
+Next call hasRole method with "ADMIN" as parameter.
+
+So this means that all the incoming http post request that starts with the /api should be accessible
+by all the users who have admin role.
+
+let us go ahead and let us test this, you know, change.
+So from here I going to stop and rerun the spring boot application.
+
+Next, let us go to postman rest client and here let us call add todo rest API.
+So here is a request URL and this is http post method.
+And here in authorization section let us choose basic authentication and just pass the username as saikrishna
+first.
+So let us first test the negative case.
+saikrishna has a password as a password.
+Next, go to body in a body.
+We have a Json object.
+Let us give title as complete task one, description complete task one and completed false.
+Okay, now go ahead and click on Send button.
+So notice here we got the
+
+{
+    "timestamp": "2024-02-15T16:05:33.069+00:00",
+    "status": 403,
+    "error": "Forbidden",
+    "path": "/api/todos"
+}
+we have configured
+the spring security like all the incoming Http post request that starts with the URL
+/api should be accessible by all the users who have a role admin, but the saikrishna user don't have
+admin role.
+The saikrishna user has a user role.
+That's why we got 403 forbidden Http status here.
+
+Now let us try to pass the admin credentials.
+So go to authorization and here just pass the admin as a user username admin as a password, click on
+send button and there we go.
+You can able to see we got the response of the rest API.
+It means only the admin user can able to access this add todo rest API.
+Okay, so this is how we configure the spring security.
+Okay.
+
+
+Now let us see the next use case.
+Like we are going to allow the users who have admin role to access update and delete Todo rest APIs.
+So let us configure spring security such a way that all the users who have a role admin can able to
+access Update Todo and delete Todo Rest APIs.
+So let's go to Spring security configuration class over here.
+
+
+
+Next, let's go to Postman client over here and here.
+Let us test the update todo and delete todo REST APIs.
+
+The admin user can able to access update to the rest API and if you go to authorization you can see
+we have passed admin credentials, the admin username and password.
+That's why the admin user can able to access this update API.
+If I try to access this, you know, update Todo REST API with saikrishna user, then it should give 403 forbidden.
+Right?
+So here let me pass username as saikrishna password as a password, click on send button and there we go.
+You can see the Http status 403 forbidden.
+It means only the admin user can able to access update todo Rest API.
+So similarly, let us test delete Todo as well.
+
+
+
+All right, so this is how we configure the spring security.
+
+
+So the remaining rest API is like get Todo, get all todos, complete todo, incomplete todo. So these are the rest
+APIs can be accessible by all the users who have the role, either admin or user.
+
+authorize.requestMatchers(HttpMethod.GET,"/api/**").hasAnyRole("ADMIN","USER");
+
+
+Okay, so let's go to SpringSecurityConfig class over here and here let's call authorize object.requestMatches method and then pass http get method as a first argument, second argument
+/api/** and then just call hasAnyRole
+and pass all the roles to hasAnyRole method.
+User and admin.
+So let us pass these roles to this.
+hasAnyRole method admin, user.
+Okay, so it means that all the incoming http get request that starts with /api URL should be accessible
+by all the users who have a role, either admin or user.
+Okay.
+
+Next let's go to postman client and here let us choose Http get method and then let us click on send
+button
+and there we go.
+Admin user can able to access get all todos.
+Next, let us pass
+saikrishna user credentials over here.
+Click on send button
+and there you go.
+saikrishna user can also able to access get all todos rest API.
+Next let us test get todo rest api.
+
+It means all the incoming http get request that starts with URL /api should be accessible by all
+the users who have a role, either admin or user.
+
+authorize.requestMatchers(HttpMethod.PATCH,"/api/**").hasAnyRole("ADMIN","USER");
+
+
+Next, let us go ahead and let us configure spring security such a way that all the users who have a role,
+either admin or user, can able to access complete and incomplete rest APIs.
+
+
+we may have a requirement in our project like we need to provide public access to few of the rest APIs.
+For example, let us say in order Todo management project, we want to provide public access to get
+related rest APIs.
+Then what we need to use, we need to call permitAll method. 
+
+comment out existing get 
+and add new with permitAll
+
+
+Now we have configured spring security such a way that we have publicly exposed all the get related
+apis like get Todo and get all todos.
+So in order to call these rest APIs, we don't have to, you know, pass the user credentials in a header
+of the request.
+
+Let's go to Postman client.
+And here I'm going to call the get all todos rest API.
+So in case of get all todos rest API, we don't have to pass the user credentials in a header because
+we have exposed these get Todo and get all Todo the rest publicly.
+Okay.
+here go to authorization tab.
+And here let us say no auth.
+Okay.
+click on send button.
+And there we go.
+Even though we haven't passed any user credentials in header of the request, we are getting the response
+of the rest API.
+It means we have successfully completed a spring security such a way that we have publicly given access
+to get all todos and get Todo rest API.
+All right.
+This is how we configure the spring security to provide a public access to the rest APIs.
+
+
+
+140. Method Level Security
+====================
