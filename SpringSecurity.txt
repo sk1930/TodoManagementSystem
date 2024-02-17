@@ -1,3 +1,5 @@
+Search with ***** to see important
+
 
 Database authentication flow
 ======================
@@ -1256,3 +1258,445 @@ admin@gmail.com/admin
 
 It means user can use either username or email.
 You know, for the authentication.
+
+
+
+
+register and login Modules Spring Boot Backend
+================
+
+In this section  we'll implement, a requirement for that is build, register and login rest APIs.
+1. we'll build the register rest API 
+2. we'll handle the exceptions in a register, rest API 
+3. will build login rest API.
+
+149. Build Register Rest API
+=======================
+
+1.create a dto.RegisterDto class to transfer the data between client and server.
+2. create a custom exception named exception.TodoAPIException.
+3. create service.AuthService interface and we will define a register method
+4. create a service.impl.AuthServiceImpl class that implements AuthService interface and its register method.
+5. create a controller.AuthController and build Register REST Api.
+6. test register API using postman client.
+
+So let's go to IntelliJ idea go to DTO package over here and just right click on Package New
+choose Java class.
+Let's give class name as RegisterDto and within a RegisterDto, let's define the instancevariables.
+Private string name
+private string username.
+Private string Email.
+Private String Password.
+
+Let us go ahead and let us use Lombok annotations to automatically create getter setter methods and
+constructors.
+So here let's annotate this class with @Getter Lombok annotation to generate a getter methods for
+these instance variables.
+let us use a@Setter Lombok annotation to automatically generate a setter methods for these
+instance variables.
+Next let us use @NoArgsConstructor annotation to create a no argument constructor for this class.
+let us use @AllArgsConstructor notation to generate a parameterized constructor for this
+class.
+Now we have created registerDTO class to transfer the data between client and server.
+
+2. Next step is create a custom exception named TodoAPIException.
+
+go to exception package over here,choose Java class.
+ TodoAPIException.
+And just extend this exception class from RuntimeException.
+let us define the instance variables 
+private HttpStatus.
+private string message.
+
+annotate with @Getter and @AllArgsConstructor
+
+3. Next step is create service.AuthService interface and define a register method.
+
+
+4. Next step is create AuthServiceImpl class that implements AuthService interface and its register method.
+
+All right, let us annotate @Service
+So this @Service annotation will automatically create a spring bean for this class.
+let us inject few dependencies using constructor based
+dependency injection.
+So here let us define the instance variables.
+Private UserRepository userRepository.
+Well, we are going to call UserRepository methods.
+That's why we are going to inject userRepository over here 
+
+
+Private RoleRepository.
+private passwordEncoder.
+
+So before storing the plane password in a database, we just need to encode it, 
+For that we are going to use password encoder.
+
+So here let us annotate this class with @AllArgsConstructor  annotation.
+
+ we don't have to use @Autowired annotation because spring will automatically inject the dependency
+whenever it finds a spring bean with only one constructor. *********
+
+So here within a register method first we'll add a condition.
+Like we'll check whether the user name is already exist in database or not.
+So we are going to keep username and email as a unique.
+So here let us add the condition.
+
+So here let's add a condition call userRepository.existsByUsername.
+Well there is no existsByUsername method in a userRepository.
+add     Boolean existsByUsername(String username); to UserRepository
+This is the custom query method that will check the user exists in database by username or not.
+
+let's go back to AuthServiceImpl class  and go to if condition here let us call
+existsByUsername method we can get the username from registerDTO. getUsername If user is already existing database, then we will simply throw the exception.
+So here throw new TodoAPIException.
+So here basically we will pass Http status.BAD_REQUEST AND  message.
+
+
+Next let's add one more condition whether a user with a email ID is already existed in database or not.
+So
+
+
+let us create a user object we'll store that user object into database.
+So here user user equal to new user.
+let us set all the details from registerDTO into user object.
+For password encode the password and set it. 
+
+
+ we need to assign a role to this user so we will get a role object from the database and then
+we will set that role.
+Object to the user object.
+So here let us have a set.
+Set<Role> roles = new HashSet<>();
+
+So go to repository.RoleRepository.
+And here let's create a method findByName and let us pass.
+Name as a parameter.
+\Okay, so this is a custom query method that will retrieve a Role object by name.
+
+Well, if you go to Role entity, you can see Name field.
+
+in AuthServiceImpl
+And now let us call findByNamemethod.
+here let us pass the role name that is ROLE_USER So let us store the result of this findByNamemethod in a role object.
+AND add this user role to the set.
+
+
+Finally, let's call userRepository.save method pass user entity object.
+And finally, let us return the success message.
+So here let us say user registered successfully.
+Now we have implemented a register method.
+
+
+So what we have done, basically we have added if condition to check whether the user name and email
+is already registered in database or not.
+we have created user object and we have set all the details from register to the user object,
+and we have also set the role to the user object.
+we have stored the user object into our database and we have returned the success message.
+
+
+5. Next step is create AuthController and build register rest API.
+
+create controller.AuthController 
+Let's annotate this AuthController class with @RestController annotation.
+then this class becomes a spring rest controller.
+
+So we'll use at RequestMapping annotation to define a base URL for all the rest APIs that we are going
+to build in this controller.
+So here, let us give the base URL as /api/auth.
+
+ To inject the dependency that is AuthService dependency 
+ creatre private AuthService authService;
+ 
+Well, instead of creating a parameterized constructor manually, let us use a lombok annotation.
+So here let us annotate this class with @AllArgsConstructor
+
+
+So here let us first create the method public response entity as a type.
+So response entity is a generic.
+So let us pass string as a type.
+Let's use method name as register and pass registerDto  as a parameter to this method.
+And let us call out service.
+It has a register method pass this registerDTO to this register method.
+So this register method returns a string.
+So here, string response.
+And finally, let us return the object of ResponseEntity.
+So here, let us pass the response object and second value that is HttpStatus.created.
+Now we have created a method.
+So let us convert this method into Rest API by annotate this method with add post mapping annotation.
+Well, we use add post mapping annotation to map incoming http post request to this particular method.
+let us view the URL for this rest API that is /register.
+let us use one more annotation here.
+That is @RequestBody annotation.
+Well this add RequestBody annotation will extract the Json from the request and it will convert that
+Json into registerDTO Java object.
+Now we have successfully built register API.
+let us take a look into next step.
+
+
+Next step is test the register API using postman client.
+
+
+And here I'm going to create a new request.
+Let us choose Http method post and let us enter the url http://localhost:8090/api/auth/register.
+we need to pass a Json in the body so go to body.
+here let us choose raw content-type Json and here let us create a Json.
+{
+"name":"testUser",
+"username":"testUser",
+"email": "testUser@gmail.com",
+"password":"testUser"
+}
+
+And notice here, we got 401 unauthorized status.
+So basically we need to provide a public access to this register API.
+goto SpringSecurityConfig.securityFilterChain()
+
+So let us go and let's configure the spring security such a way that all the users can able to access
+this register API. and we can hit the POST: http://localhost:8090/api/autj/register 
+without any authorization
+
+
+So here, just call authorize object request matchers.
+authorize.requestMatchers("/api/auth/**").permitAll();
+                            // to make register api public to all users
+                            
+It means that all the URLs that starts with /API /auth should be accessible to all the users.
+
+Now let us restart our springboot application.
+Stop and rerun.
+
+
+without cascade type it ran fine
+
+
+
+And let us go ahead and let us send the request again.
+And there we go.
+We can able to see the Http status 201 created and the response user registered successfully.
+let's go to database and let us verify the entry.
+
+
+150. Exception Handling in Register REST API
+=========================
+create GlobalExceptionHandler class.
+
+send  
+{
+"name":"testUser12",
+"username":"testUser12",
+"email": "testUser12@gmail.com",
+"password":"testUser12"
+}
+
+twice , 
+
+And if you look at the request, the user name is testUser12 and email is testUser12@gmail.com.
+And if you look at the database table, the user name and email is already existing in the database.
+And if I try to send the request, so here I'm getting 401.
+Unauthorized.
+And if we go back to project and if you look at the console log here, username already exist.
+So   we have to catch this exception and we have to prefer the correct error response and then
+we will send that error response back to the client.
+But in a response you can see we are not getting any response and we are getting 401.
+Unauthorized status.
+
+So   we have to get,   bad request as a status and we have to get all the exception
+details in the response.
+
+In order to send the proper error response back to the client, we have to implement the exception handling.
+
+So goto exception package and create ErrorDetails class.
+and create variables for the info that you want to send in the response.
+
+Next, let us annotate this class with 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+
+
+
+GlobalExceptionHandler
+
+Next go to exception package create new Java class.
+Let's give class name as GlobalExceptionHandler.
+Well within a GlobalExceptionHandler class, we are going to handle all the exception that occur in
+our application.
+
+So instead of handling exception in each controller, we can create a separate class as a GlobalExceptionHandler and we can,   keep all the exception handling logic in a single place.
+
+@ControllerAdvice
+*********
+Next, let us annotate this class with at controller advice annotation.
+Well, we use ControllerAdvice annotation to handle the exceptions globally.
+Next, within this GlobalExceptionHandler, we have to handle the specific exceptions.
+For that we can use @ExceptionHandler annotation.
+
+
+    @ExceptionHandler(TodoAPIException.class)
+    public ResponseEntity<ErrorDetails> handleTodoAPIException(TodoAPIException exception,
+       
+	   
+So here, let us first create a method public and then let us give return type as ResponseEntity and
+
+let us pass error details as a type and let us give method name as handleTodoAPIException.
+Next, let us pass the parameter 
+So first parameter is TodoAPIException and second parameter is WebRequest.
+Well, if you go to AuthServiceImpl class and go to register method and look at here, we have thrown TodoAPIException
+
+And in a GlobalExceptionHandler we have to handle this TodoAPIexception and we will create a proper
+error response for this exception and we'll send that error response back to the client.
+
+
+Next, go back to GlobalExceptionHandler class and let us annotate this method with 
+    @ExceptionHandler(TodoAPIException.class)
+
+Next, within this method, let's create an object of error Details class.
+Next, let us pass values to the constructor.
+So first value is a timestamp = So LocalDateTime.now
+second value is a message so we can get a message from the exception.
+So exception.getMessage.
+And third value is a details so we can get the details from WebRequest.
+So WebRequest.getDescription and then pass false.
+false is for includeClientInfo
+
+
+This WebRequest. is   a request and we can get few details from this WebRequest.object.
+For example, we can get the URL from this WebRequest.
+So here we are calling get description and we are passing the false.
+It means this get description method only returns the URL, not other details.
+
+Next, let us return the object of ResponseEntity class.
+So ResponseEntity and then let us pass value to the constructor first value as a error details.
+Second value as the Http status.
+The Httpstatus.BAD_REQUEST.
+Perfect.
+Now we have handled the specific exception 
+
+and let us test this change.
+Well, our spring boot application is up and running.
+Next let's go to postman client and here now let us go and let us send the request.
+And there we go.
+{
+    "timeStamp": "2024-02-17T15:24:28.3883202",
+    "message": "Username already exists!",
+    "details": "uri=/api/auth/register"
+}
+400 BAD_REQUEST
+
+
+151. Build Login REST API
+======================
+
+1.create a LoginDto class to transfer the data between client and server.
+2. define a login method in a AuthService interface.
+3. implement  login method in a AuthServiceImpl class with the help of authenticationManager
+4. build a login rest API in AuthController class
+5. make sure the api is public to everyone 
+authorize.requestMatchers("/api/auth/**").permitAll();
+                            // to make register and login api  public to all users
+in SecurityConfig.securityFilterChain 
+6. Test
+So first step is create a login DTO class.
+create new java class LoginDto
+define the instance variables.
+
+private String usernameOrEmail;
+    private String password;
+	
+	
+Well, we are going to allow user to use either username or email for the authentication.
+That's why this is the variable name.
+Next use Lombok
+annotations.
+Now we have created login class to transfer the data between client and server.
+
+2. let's go back to the development steps.
+Next step is define a login method in a AuthService interface.
+    String login(LoginDto loginDto);
+3. Implement login method in a AuthServiceImpl class.
+
+Well, before implementing this login method, let's first inject the dependency for this method.
+So here we are going to inject AuthenticationManager.
+
+private AuthenticationManager  authenticationManager;
+
+So make sure that you use AuthenticationManager from 
+org.springframework.security.authentication package.
+Well, we are going to basically call the authenticate method of this AuthenticationManager.
+That's why here we are injecting authentication AuthenticationManager.
+
+authenticate method takes authentication as an interface
+and we have to provide the implementation for this authentication interface.
+Well, UsernamePasswordAuthenticationToken class is a implementation of this authentication interface.
+So let us pass an object of UsernamePasswordAuthenticationToken.
+
+Well, if you go to UsernamePasswordAuthenticationToken class and if you go inside this AbstractAuthenticationToken.
+ this class implements,  authentication interface.
+It means this UsernamePasswordAuthenticationToken class indirectly implements authentication interface.
+
+Next, this authenticate method returns the authentication.
+So let us get the result of this authenticate method in a authentication object.
+
+Next, we need to store this authentication object in a securityContextHolder.
+
+
+
+
+Well, spring security basically uses this authentication object.
+That's why here we are setting this authentication object to the securityContextHolder.
+Okay, perfect.
+Finally, we'll send the success message.
+return "user logged in successfully";
+
+
+4.Next step is build login Rest API.
+AuthController class and within AuthController class let's
+build login rest API.
+
+
+Next, let's create a method and then we'll convert that method into rest API using spring annotations.
+So here public response entity.
+So response entity is a generic class.
+Let us pass string as a type.
+Let's give method name as login and let us pass LogindTO as a method argument.
+        String response = authService.login(loginDto);
+
+Second value as a Http status.OK
+Perfect.
+Now we have created a method.
+Well, we use @ post mapping annotation to map incoming http post request to this particular method.
+Next, let us provide the Uri for this rest API that is /login.
+Next, let us use @RequestBody annotation over here.
+Well, this @RequestBody annotation will extract the Json from the request and it will convert that
+Json into login Java object.
+
+
+5. make sure the api is public to everyone 
+authorize.requestMatchers("/api/auth/**").permitAll();
+                            // to make register and login api  public to all users
+in SecurityConfig.securityFilterChain 
+
+6. test login using postman client.
+
+
+So let's go to our project again and let us restart the Springboard application and then we'll test
+the rest API by using postman client.
+
+POST :htpp://localhost:8090/api/login
+
+Auth : no auth 
+Body:
+{
+"usernameOrEmail":"testUser12",
+"password":"testUser12"
+}
+test case 2: {
+"usernameOrEmail":"testUser12@gmail.com",
+"password":"testUser12"
+}
+
+Our spring boot application is up and running in embedded Tomcat server on port 800.
+Next.
+200- OK
+user logged in successfully.

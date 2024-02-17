@@ -55,17 +55,26 @@ we need to define one more foreign key in this users_roles table that is role_id
 So for that here, let's use the attribute inverseJoinColumns and let's use again @JoinColumn annotation.
      */
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+//@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+//    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.DETACH})
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
     )
+
     private Set<Role> roles;
 
 
 
 
-    /*Hibernate: create table roles (id binary(16) not null, name varchar(255), primary key (id)) engine=InnoDB
+    /* with
+@ManyToMany(fetch = FetchType.EAGER)
+same with @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+
+
+
+    Hibernate: create table roles (id binary(16) not null, name varchar(255), primary key (id)) engine=InnoDB
 Hibernate: create table users (id binary(16) not null, email varchar(255) not null, name varchar(255), password varchar(255) not null, username varchar(255) not null, primary key (id)) engine=InnoDB
 Hibernate: create table users_roles (user_id binary(16) not null, role_id binary(16) not null, primary key (user_id, role_id)) engine=InnoDB
 Hibernate: alter table users drop index UK_6dotkott2kjsp8vw4d0m25fb7

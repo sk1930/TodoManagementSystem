@@ -71,6 +71,8 @@ public class SpringSecurityConfig {
 
                                     authorize.requestMatchers(HttpMethod.GET,"/api/**").permitAll();
                             */
+                            authorize.requestMatchers("/api/auth/**").permitAll();
+                            // to make register and login api  public to all users
                             authorize.anyRequest().authenticated();
                                 }
                         ).httpBasic(Customizer.withDefaults());
