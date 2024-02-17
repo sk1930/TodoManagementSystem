@@ -3,10 +3,13 @@
 package sk.todo.config;
 
 import ch.qos.logback.core.encoder.Encoder;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -21,7 +24,25 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableMethodSecurity // for method security
+@AllArgsConstructor
 public class SpringSecurityConfig {
+
+
+    private UserDetailsService userDetailsService;
+    // to inject CustomUserDetailsService using AllArgsConstructor
+
+
+    //let us annotate this method with @Bean annotation so that spring container maintain the object
+    //of this AuthenticationManager. It says Unhandled exception.
+    //So go ahead and click on this.
+    //So this will add exception as a method signature.
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+
+
+
+    }
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -82,6 +103,9 @@ public class SpringSecurityConfig {
     }
 
 
+
+    /* this is for in-memory authentication
+    we dont need this as we use database authentication
     @Bean
     public UserDetailsService userDetailsService(){
 
@@ -98,6 +122,6 @@ public class SpringSecurityConfig {
                 .build();
 
         return new InMemoryUserDetailsManager(saikrishna, admin);
-    }
+    }*/
 
 }

@@ -1,7 +1,13 @@
+
 Database authentication flow
 ======================
+
+
 *********
 postman <-Spring Security Filters -> TodoController <-> UserDetailsServiceImplementation <-> User Repository <-> DB(Users and roles).
+
+
+
 
 
 
@@ -163,7 +169,7 @@ this is the spring security
 provided out of the box login page to log in to the Spring boot project.
 
 Next,
-In order to log out from the application, you have to type the URL like http://localhost:8080/logout.
+In order to log out from the application, you have to type the URL like http://localhost:8090/logout.
 
 So this is called the form based authentication because here we are using login form to log in to the application.
 
@@ -627,8 +633,15 @@ Most of the developer prefer method level security to secure the rest APIs based
 
 
 
-141. Database Authentication Overvie
+141. Database Authentication Overview
 =================
+1. created JPAentities for user and role
+2. created RoleRepository and UserRepository
+3. created CustomUserDetailsService class that implements UserDetailsService interface and override its loadUserByUsername method.
+4. pass CustomUserDetailsService using private UserDetailsService userDetailsService;
+to SpringSecurityConfig
+5. create AuthenticationManager Bean 
+
 
 Well, in case of database authentication, we are going to store the users and roles in a database.
 Well, earlier we were storing the users and roles in a in-memory object.
@@ -657,3 +670,589 @@ Database authentication flow
 *********
 postman <-Spring Security Filters -> TodoController <-> UserDetailsServiceImplementation <-> User Repository <-> DB(Users and roles).
 
+142. Creating User and Role JPA Entities
+=======================
+Well, in case of database authentication, we need to create users and roles tables in our database
+and maintain many to many mapping between users and roles.
+whenever client make a call then client have to pass the username and password in header of that request.
+Next, the request will come to the spring security filters.
+Well, spring security filters will extract the username and password from the header and then it will
+load the corresponding user object from the database and then it will make an authentication.
+
+I mean, it will validate the request contained username and password with the database username and password.
+So this is basically a database authentication.
+
+Well, in order to implement the database authentication, we have to create User and Role JPA entities and
+then Hibernate will create a corresponding tables in a database.
+*****
+whenever we create a many to many mapping between two entities, then a third table will be created
+and this third table is called a join table.
+So this third table basically maintains the details from users table as well as roles table.
+And if we can notice your users table has a primary key ID, so this primary key becomes a foreign key
+in a third table.
+Next roles table has a primary key ID. This primary key ID becomes a foreign key in a third table.
+And we are going to use annotations to map JPA entities and its fields with corresponding database tables
+and its columns
+
+Let's go to IntelliJ idea.
+Let's go to our project and let us create User and Role entities and let us establish many to many mapping
+between these two entities.
+in IntelliJIdea
+Go to entity package, right click on entity package new, and then choose Java class.
+Let's give class name as User and let's go and let define the instance variables for this class.
+So let's say 
+
+private long id;
+private long name
+.....
+ username, email, password;
+
+Let's go ahead and let's use Lombok annotations to reduce the boilerplate code such as getter/setter
+methods and constructors.
+So here, let's annotate this User class with @Setter Lombok annotation to create a setter methods for these
+instance variables.
+@Getter Lombok annotation to create a getter methods for these instance variables.
+@NoArgConstructor annotation and @AllArgsConstructor annotations to create a constructors for this class.
+
+So here let's annotate User class with @Entity annotation and to make this user class as JPA entity and make sure that you choose @Entity annotation
+from Jakarta.persistence package.
+
+use @Table(name = "users") annotation from Jakarta.persistence package to provide
+a table details for this entity.
+
+@Id let's define the primary key for this entity.
+For that, let's use @Id annotation from Jakarta.persistence package.
+Next, let's use @GeneratedValue(strategy = ) annotation to provide a primary key generation strategy.
+ 
+for username, @Column(nullable=False, unique=ture) annotation to provide a column details for the particular field.
+Similarly, let's annotate this email field with @Column annotation and let's make this column as
+a not null and then let's make it as unique by using unique equal to true.
+And let's make this password as a not null by using nullabel equal to false.
+And if you don't specify @Column annotation, then smart enough to give a column name to this field.
+for name field 
+So by default, JPA will provide a column name as a field name.
+For example, here we haven't annotated this name field with @Column annotation.
+Okay, but by default JPA will give column name to this name field as a field name.
+
+
+Okay, next, let's go ahead and let's define the role entity.
+
+Now we have defined User and Role entities.
+
+Next, we need to establish the many to many relationship
+*****
+between these two entities, 
+So go to User entity and within this User entity, let's create a set of roles.
+private Set<Role> roles;
+Well, you can also use list instead of set, but we should have a unique roles for that here.
+so using set 
+Next, let's use JPA annotation that is @ManyToMany annotation to have a many to many relationship
+between User and Role entity.
+Okay, so here to @ManyToMany annotation, let's pass fetch type as a eager.
+Well, fetch type eager means whenever we load user entity along with that it will also load its roles.
+
+Next let's specify Cascade type All. it means if you look at all it has different operations like persist, merge, remove, refresh, detach.
+So whenever we perform any action on parent, it also applicable to its child's.
+
+That's why we have given cascade all it means whenever we save user, it will also save its roles because
+user is a parent and roles are a child.
+Okay, next let's use @JoinTable annotation to create the join table.Next, let's give a third table name as users_roles.
+Let's use this attribute @JoinColumn annotation to provide the column name.
+joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+
+So let's use its name attribute and let's use column name as user_id and this column basically
+references from the primary key that is ID. Well, if you can notice here, we have given the column
+name as user_id, and this is basically a foreign key.
+And this foreign key is referring to the primary key of this users table.
+
+
+Next, we need to define one more foreign key in this users_roles table that is role_id.
+So for that here, let's use the attribute inverseJoinColumns and let's use again @JoinColumn annotation.
+Let's give column name as role_id and then this should be referenced from primary key of roles
+table.
+So here, just pass the ID if you go to Role entity and if you can notice here, Role entity has a primary
+key ID, So this is primary key ID we are referring in a here.
+
+Next, let's go ahead and let's run our application and let us see how Hibernate will create the tables
+for this relationship.
+So here, let me stop and rerun our remote application.
+
+Next, let's go to MySQL Workbench over here and go to the database
+and just refresh and go to the tables
+
+You can able to see our users table is created and it has the columns, ID, email, name, password
+and roles table is created
+It has the columns, ID name and
+users_roles table is created
+It has the columns, user ID and role ID.
+It means we have successfully implemented many to many relationship between User and Role entities.
+
+
+
+
+143. UserRepository and RoleRepository
+====================
+we are going to create spring JPA repositort interfaces for User and Role entities.
+So go to repository package over here.
+Within a repository package, let's create an interface.
+public interface UserRepository extends JpaRepository<User,UUID>
+And notice here, JpaRepository is a generic interface and it takes two parameters.
+First parameter is the type of the entity.
+Second parameter is the type of the primary key.
+we will get a CRUD methods to perform CRUD database operations for this User JPA entity.
+
+let us go ahead and let us create few of the spring data JPA custom query methods.
+*******
+So within this UserRepository interface, 
+    Optional<User> findByUsername(String username);
+
+optional is a generic.
+Let us pass User as a type.
+Next, let us give method name as findByUsername and then pass username as a method argument.
+this is a standard method naming convention that we use to create a spring data JPA custom query method.
+ this findBy is basically a keyword and this retrieves
+a entity by the field name.
+So here we are using field name username.
+So if you go to User entity, User entity has a field name username.
+So this username is a part of this query method.
+
+Okay, so spring Data JPA internally create, SQL query based on this method name.
+*****
+
+So similarly, let us create one more query method.
+Let us say Boolean as the return type and then existsByEmail.
+Next, let us pass email as a method argument.
+this is the standard method name convention that we use to create a custom query method and existsBy is the standard keyword provided by spring data JPA.
+So this method will basically check whether a User object by this email is exist in a database or not.
+
+So just type optional and pass User as a type and then findByUsernameOrEmail.
+And next, let us pass Username as a first argument and then email as a second argument.
+So this query method retrieve a User object by Username or email.
+All right, so spring Data JPA internally create a query by using this method name.
+
+
+
+Next, let us create a RoleRepository as well.
+So go to repository package right click new, and then choose Java class and then choose interface.
+And here let us type RoleRepository.
+Next, let us extend this interface from JpaRepository and then let us pass Role as a first argument
+and then long as a second argument.
+Well, once we create a RoleRepository interface that extends JpaRepository interface, then this
+RoleRepository will get CRUD methods to perform CRUD database operations for this rule entity.
+
+
+HowDatabaseAuthenticationWorks
+====================
+**************
+see image HowDatabaseAuthenticationWorks
+
+let's understand how database authentication works in a spring security.
+Well, whenever users submit the request, then the request contains the username and password in a header,
+and the request first comes to AuthenticationFilter, and then AuthenticationFilter will create an
+instance of authentication object.
+This object basically contains the username and password, and then AuthenticationFilter will pass
+this authentication object to AuthenticationManager.
+
+Well, AuthenticationManager component is very important and this component manages different authentication
+providers.
+Well, spring Security supports different authentication
+You know, implementations, for example, Spring security supports OAuth2 authentication, LDAP authentication and also DAO authentication.
+And there are a few more authentication providers.
+So AuthenticationManager has a authenticate method
+So AuthenticationManager will basically don't know which authentication provider it have to call because
+there are different authentication providers
+
+So AuthenticationManager what it does, it basically takes the help from this supports() method
+
+So each authentication provider has supports() method. The authenticate() method and this AuthenticationManager
+will internally call this supports() method of all these authentication providers to check which authentication
+provider provides a support.
+  each authentication provider uses loadByUsername method to load the user object.
+  in case of database authentication we have to create a CustomUserDetailsService class
+that implements UserDetailsService interface, and then we need to provide implementation for
+loadUserByUsername method.
+So this method will basically load the user object from the database.
+So this is how basically the database authentication works.
+Whenever users submit the request first the request comes to AuthenticationFilter, and then authentication
+filter will create an instance of authentication object with the username, password, and then authentication
+filter will pass this authentication object to AuthenticationManager.
+AuthenticationManager will manage different authentication providers and AuthenticationManager has
+authenticate() method.
+So this authenticate() method internally calls supports method of each authentication provider just to
+check which authentication provider is responsible to authenticate the request.
+Once it will identify that authentication provider, then it will internally call its respective authenticate
+method.
+let's say in our case we are doing database authentication and this authenticate method
+will forward the request to that authenticate method of this(DAO) authentication provider and then this authentication
+provider internally user's loadUserByUsername method of this UserDetailsService to load the user from
+the database and then it will perform the authentication with respect to the database details.
+And next is authenticate method will return the instance of authentication object and then this authentication
+method of AuthenticationManager.
+Again, return the instance of authentication object to the AuthenticationFilter, and then authentication
+will store this authentication object into spring security context Folder.
+So this is how the database authentication works.
+
+
+Let's go and let's see how this database authentication works internally in our Spring Framework library
+Okay.
+
+So let's go to IntelliJ Idea and go to navigate and search everywhere and then go to classes.
+And here, just search for AuthenticationFilter and go ahead and choose that AuthenticationFilter class
+from Spring Security Library.
+And it has a method that is doFilterInternal within this doFilterInternal method,
+We have an instance of Authentication object.
+Well, if you go to this attemptAuthentication method, it internally process this request and it will
+convert the request object into authentication object.
+For example, if you go to go to this convert method.
+from BasicAuthenticationConverter
+So this convert method will basically extract the authorization header from this request.
+And then this header basically contains the username and password in a base 64 format.
+And next spring security uses base 64 decoder to decode the the token and then it will
+get the username, password from the token and then it will create an UsernamePasswordAuthenticationToken
+class.
+UsernamePasswordAuthenticationToken class is basically implements Authentication interface
+
+Next, let me go back to convert method in AuthenticationFilter class
+so convert method converts the request into  requesting authentication object.
+Now, this authentication object contains username and password
+Next, this AuthenticationFilter will internally has an AuthenticationManager here.
+So this AuthenticationManager has a authenticate method.
+So this authentication method is responsible for the authentication.
+Next, let's jump into this authenticate() method of AuthenticationManager.
+
+So so far we have understood that the user request first comes to AuthenticationFilter, and then authentication
+filter will create an instance of authentication and then it will pass username and password to this
+authentication object, and then it will pass the authentication object to AuthenticationManager
+
+So if you can see the logic, go here
+So AuthenticationManager has authenticate method.
+Now let's go into this authenticate method and let's see the authentication providers and how it will
+internally call the UserDetailsService to get the user object.
+So let's go to source code and go to AuthenticationManager authenticate method over here.
+And notice here, AuthenticationManager interface, it has the implementation.
+
+    Authentication authenticate(Authentication authentication) throws AuthenticationException;
+
+clickon I symbol beside line numbers to see the implementation classes
+So go into ProviderManager class.
+It has implementation of authenticate method.
+So within this method we have the important logic.
+Like if you can notice here, it will get all the authentication providers and here we have while loop.
+Iterator var9 = this.getProviders().iterator();
+
+        while(var9.hasNext()) {
+		
+So this while loop for a list of authentication providers.
+For example, you can see the next.
+So this returns authentication provider.
+And if you can see the diagram over here.
+So AuthenticationManager will basically manage the list of authentication providers.
+And if you go to source code over here, if you can see this authentication method has a list of authentication
+providers.
+while(var9.hasNext()) {
+            AuthenticationProvider provider = (AuthenticationProvider)var9.next();
+            if (provider.supports(toTest)) {
+			
+
+Now this authenticate method, don't know which authentication provider is responsible for authentication.
+That's why what it does, it will basically call this supports method to check which authentication
+provider is responsible for authentication.
+So once it goes through, then what it will do, it will call the respective authentication provider
+authenticate method.
+                    result = provider.authenticate(authentication);
+					
+					right click on authenticate and 
+					click on goto declaration or usage \
+					then beside authenticate method in the 
+					interface click on I symbol to see implementation classes 
+		You will see we have OAuth authentication provider, we have LDAP and we're
+mainly looking into the database authentication,  AbstractUserDetailsAuthenticationProvider class, 
+		beside the class name if u see there is a sy,bol click on that to see the subclasses of this 
+		you will have DaoAuthenticationProvider
+	
+
+
+So let's go into the AbstractUserDetailsAuthenticationProvider -  authenticate method
+So AbstractUserDetailsAuthenticationProvider responsible to authenticate the request with respect to database.
+So if you can clearly see the logical here.
+So this method authenticate internally retrieve the user from the database.                 
+user = this.retrieveUser(username, (UsernamePasswordAuthenticationToken)authentication);
+
+And retrieveUser method is implemented by DaoAuthenticationProvider
+and this retrieveUser internally calles getUserDetailService
+            UserDetails loadedUser = this.getUserDetailsService().loadUserByUsername(username);
+
+ and it's loadUserByUsername method.
+Goto implementations of loadByUsername
+For example, if you go to CustomUserDetailsService
+So we have created this class and we have provided implementation for this load user by username to
+load the user from the database using it.
+So this is how the authentication provider will call loadUserByUsername method to load the user from
+the database and it will do the database authentication.
+So this is how basically a database authentication works
+In a spring security.
+
+
+145. Creating CustomUserDetailsService Class
+=====================
+**********
+
+In this lecture, we are going to create a CustomUserDetailsService class that implements
+UserDetailsService interface.
+
+
+if you look at the database authentication workflow here, so we are going to create
+CustomUserDetailsService class that implements UserDetailsService.
+
+here UserDetailsService is a interface provided by spring security and this interface contains loadUserByUsername, 
+So basically we need to create a class that implements this interface and override loadByUsername() method and provide
+the implementation.
+So if you can see this database authentication workflow.
+So whenever client sends a request, first the request comes to AuthenticationFilter and then
+AuthenticationFilter will create an instance of authentication, and then it will call the authenticate method of
+AuthenticationManager.
+And then this AuthenticationManager will choose the appropriate AuthenticationProvider.
+In our case, this AuthenticationManager will call DaoAuthenticationProvider.
+And this DaoAuthenticationProvider internally call loadUserByUsername method of this UserDetailsService.
+And there is no implementation for this UserDetailsService.
+So in this lecture, we are going to create CustomUserDetailsService class that implements UserDetailsService
+interface and override loadUserByUsername method and provide the implementation.
+
+
+So basically you will write a logic to load the user object from the database and then we will provide
+that user to the DaoAuthentication provider.
+So DaoAuthenticationProvider will provide that user to the authentication manager.
+And then this authentication manager will basically authenticate the user request username password
+with a database username and password.
+
+All right, so this is how the database authentication works.
+
+
+So let's go to IntelliJ idea and let's go to our project and go to base package.
+And here let's create a new package  security.
+And within a security package, let's create a Java class, let's call it as CustomUserDetailsService.
+ implements UserDetailsService interface and notice your UserDetailsService interface
+is from org.springframework.security.core.userdetails package.
+And if you can go inside this UserDetailsService interface, you can see here UserDetailsService interface
+provides loadUserByUsername method.
+So let us override this method and let's provide the implementation.
+So let's go back to CustomUserDetailsService class, just more so in this class, click on this implement
+methods and click on 
+
+Next, let us annotate this service class with @Service annotation so that spring container will create a spring bean for this class.
+Next, we need to call UserRepository methods in this service class.
+So let us first inject UserRepository by using constructor based dependency injection.
+So here, just create a UserRepository field
+And instead of creating the constructor manually, we can use the Lombok annotation.
+So let us annotate this service class with @AllArgConstructor
+Next go to loadUserByUsername method and within this method let us write the logic to load the user
+object from the database.
+
+So here call UserRepository instance
+and then it has findByUsernameOrEmail method.
+And here basically we are going to provide option to the user like user can use either usernameOrEmail
+to the login.
+So here let me rename the parameter name from string username to usernameOrEmail.
+So we want to allow users to use either usernameOrEmail.
+So we are going to basically support both username and email.
+So here, let me rename this variable accordingly.
+So here just pass usernameOrEmail and usernameOrEmail.
+So this field basically contains either usernameOrEmail.
+That's why I have passed this variable twice.
+
+
+Next this findByUsernameOrEmail method returns optional.
+*******
+
+So what we can do is we can throw the exception.
+I mean let us say if user with a given username Or Email is not exist in database, then we need to
+throw the exception
+So here just call orElseThrow method and notice here.
+orElseThrow method takes supplier as a functional interface and we have to provide the lambda expression
+implementation for this supplier functional interface.
+So let us call this orElseThrow method over here.
+And let us provide the lambda expression.
+So here let us call UsernameNotFoundException and let us go some custom error message something
+User not exists by Username or Email
+Perfect.
+
+
+Next, this user object has a set of Role, so let us convert a set of Role into a set of
+GrantedAuthority
+So here, let us declare, Set and then pass GrantedAuthority and let's call it as authorities
+and this user object has a roles
+So let us call, getRoles.
+And then this set of roles has a stream method.
+So let us call stream method and then this stream has a map method.
+So let us call map method to convert one object into another object and then let us provide the lambda
+expression.
+So here, just pass Rolele and then let us create instance of SimpleGrantedAuthority and then pass role
+dot getName
+And finally let us call collect method to collect the result.
+So here basically we are converting a set of roles into a set of GrantedAuthority.
+Spring security
+basically expect this Set of GrantedAuthority.
+That's why we have converted a Set of roles into Set of GrantedAuthority.
+Next, let us create a user object that is provided by spring security and we will return that user
+object. choose User
+from org.springframework.security.core.userdetails.User package.
+And next, let us pass this usernameOrEmail field as a first argument.
+Okay, so we are going to support, you know, both username and password.
+That's why just pass this usernameOrEmail.
+Next, let us pass password as a second argument so we can get a password from user object, user dot
+get password and then just pass authorities as a third argument.
+
+
+
+So let me recap what we have done in this lecture.
+We have created CustomUserDetailsService class that implements UserDetailsService interface and override
+its loadUserByUsername method.
+And within this method we have retrieved the user object from the database by using findByUsernameOrEmail.
+Next, we have converted a set of Roles into a set of GrantedAuthority
+And finally, we have created a user object that is provided by spring security and we have returned
+that user object.
+
+In next lecture, we will configure this CustomUserDetailsService in a spring security.
+Spring security will call this method to get the user object from the database.
+
+
+146. Database Authentication
+======================
+we have to provide this CustomUserDetailsService to the spring security so that
+spring security will call this loadUserByUsername method to get the user object from the database.
+
+go to config package.
+Within that we have SpringSecurityConfig class.
+And here let us go ahead and let us inject CustomUserDetailsService.
+I will declare UserDetailsService field.
+So here we are using interface to inject the dependency.
+So in order to achieve the loose coupling, we use an interface.
+Next, let us use constructor based dependency injection to inject the dependency.
+Well, instead of creating the constructor manually, let us annotate this class with @AllArgConstructor annotation.
+Now we have injected UserDetailsService.
+
+
+Next, let us go ahead and let us create a bean for AuthenticationManager.
+So here just type public AuthenticationManager and let's use method name as authenticationManager.
+And then this method takes AuthenticationConfiguration as an argument.
+And next return configuration.getAuthenticationManager();
+Next, let us annotate this method with @Bean annotation so that spring container maintain the object
+of this AuthenticationManager.
+So here is a compilation error.
+It says Unhandled exception.
+So go ahead and click on this.
+So this will add exception as a method signature.
+Now we have an AuthenticationManager.
+
+
+Well, if you look at the database authentication workflow now we have configured this AuthenticationManager
+So spring security will call this AuthenticationManager and its authenticate method.
+Next, this authenticate method will call this DaoAuthenticationPprovider and this DaoAuthenticationProvider
+will internally call loadUserByUsername method of this CustomUserDetailsService class.
+
+
+Next, in order to test this database authentication, we need to insert the users and roles in a database
+table.
+So let's go to MySQL workbench over here.
+So right click on users table, select users and let us go ahead and let us insert a couple of users
+in this table.
+
+
+
+ We'll create a 
+encrypted password.
+So let's go back to our project and here go to utils  package and class PasswordEncoderImpl, s
+ let's create an instance of PasswordEncoder.
+So PasswordEncoder is interface.
+It has multiple implementations like by BCryptPasswordEncoder and Argon2PasswordEncoder, Script
+PasswordEncoder.
+So we are going to us BCryptPasswordEncoder
+And next let us put the System.out.println and then call passwordEncoder
+It has a encode method and then pass saikrishna as a plain text.
+Next, let us put one more System.out.println and then call PasswordEncoder and then call encode method
+and then pass admin as a plain text.
+Next, let us run this program.
+
+
+        System.out.println(passwordEncoder.encode("password")); for saikrishna
+
+        System.out.println(passwordEncoder.encode("admin")); for admin
+		
+
+Notice here the encoded password is printed.
+So this is this password is for this user.
+So let us copy and go to database table and paste it over here.
+Next, let us copy this password.
+This is this is our admin user and paste it over here.
+
+
+
+select * from todo_management.users;
+
+select UUID() from dual;
+# password is generated from util.PasswordEncoderImpl.java
+insert into users values (UUID_TO_BIN(UUID()),"sai@gmail.com","saikrishna","$2a$10$4VMQXJAdEoPwAYsu1Gk3bOkMBVOY9.Afvomi4ECx7dVw0.vU5sRzS","saikrishna");
+insert into users values (UUID_TO_BIN(UUID()),"admin@gmail.com","admin","$2a$10$qbMqWiHRPR6JYKEKDIXwqu60OcO217UT1xBmB/UTbDa8el3NlmOcG","admin");
+
+
+
+And there we go.
+We are good to use these two users.
+Next, let us go to roles table
+
+select * from todo_management.roles;
+INSERT INTO roles  VALUES (UUID_TO_BIN(UUID()),"ROLE_ADMIN");
+INSERT INTO roles  VALUES (UUID_TO_BIN(UUID()),"ROLE_USER");
+
+
+
+Well, notice here we are providing ROLE_ as a prefix.
+Well, spring security will basically internally add this ROLE_prefix for this role.
+
+
+
+Next go to users_roles table to provide the mapping so user_id one.
+SELECT * FROM todo_management.users_roles;
+
+
+INSERT INTO USERS_ROLES VALUES((SELECT ID FROM USERS where username = "saikrishna"),(select id from roles where name = "ROLE_USER"));
+
+INSERT INTO USERS_ROLES VALUES((SELECT ID FROM USERS where username = "ADMIN"),(select id from roles where name = "ROLE_ADMIN"));
+
+
+
+
+Okay, next let us go to our project.
+Next, as we are using database authentication, 
+in SpringSecurityConfig.java  - userDetailsService() 
+we have written for in-memory authentication, 
+So make sure that you comment out this code, otherwise you will get the exception.
+ So as we are using database authentication, that's why we are going to comment out this in-memory authentication
+related code.
+
+And next, if you go to application.properties file here, also we have configured the user.
+So let me remove this as well.
+
+
+Next, let's go back to SpringSecurityConfig class and notice here we have injected
+UserDetailsService but we haven't provided its reference to the spring security.
+Well, spring security six onwards, we don't have to manually provide this
+UserDetailsService to the AuthenticationManager.
+So whenever we inject UserDetailsService in a spring security class, then Spring Security six will
+automatically uses this UserDetailsService and it will call its loadUserByUsername method.
+
+
+Now we are good to use a database authentication.
+So let us go ahead and let us rerun our spring boot application and let us test database authentication.
+So from here I want to stop and rerun the spring boot application.
+Well, our spring boot application is up and running.
+Next, let's go to Postman
+Client
+Test with
+saikrishna/ password
+admin/admin
+sai@gmail.com/ password
+admin@gmail.com/admin
+
+It means user can use either username or email.
+You know, for the authentication.
