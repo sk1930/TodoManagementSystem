@@ -73,6 +73,11 @@ public class SpringSecurityConfig {
                             */
                             authorize.requestMatchers("/api/auth/**").permitAll();
                             // to make register and login api  public to all users
+
+                            // granting permission to all Pre-flight requests.
+                            // Done as part of Basic authentication in react.
+                            authorize.requestMatchers(HttpMethod.OPTIONS,"/**").permitAll();
+
                             authorize.anyRequest().authenticated();
                                 }
                         ).httpBasic(Customizer.withDefaults());

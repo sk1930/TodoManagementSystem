@@ -6,11 +6,29 @@ import HelloWorld from './HelloWorld'
 import ListTodoComponent from './components/ListTodoComponent'
 import HeaderComponent from './components/HeaderComponent'
 import FooterComponent from './components/FooterComponent'
-import { BrowserRouter,Routes,Route} from 'react-router-dom'
+import { BrowserRouter,Routes,Route, Navigate} from 'react-router-dom'
 import TodoComponent from './components/TodoComponent'
+import RegisterComponent from './components/RegisterComponent'
+import LoginComponent from './components/LoginComponent'
+import { isUserLoggedIn } from './services/AuthService'
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  function AuthenticatedRoute({children}){
+    // 163. Secute the routes in React APP
+    // here {children} is taken as array
+
+    const isAuth = isUserLoggedIn();
+
+    if(isAuth){
+      return children;
+    }
+    return <Navigate to='/'/>
+    ///  see path ='/' which has element LoginComponent
+
+
+  }
+
 
   /*return (
     <>
@@ -27,23 +45,40 @@ function App() {
     <BrowserRouter>
     <HeaderComponent/>
     <Routes>
-      {/* http://localhost:8090 */}
-      <Route path='/' element = {<ListTodoComponent/>}>
+      {/* http://localhost:3000 */}
+      <Route path='/' element = {<LoginComponent/>}>
               </Route>
 
-      {/* http://localhost:8090/todos */}
-      <Route path='/todos' element = {<ListTodoComponent/>}>
+      {/* http://localhost:3000/todos */}
+      <Route path='/todos' element = {
+      <AuthenticatedRoute>
+        <ListTodoComponent/>
+        </AuthenticatedRoute>
+        }>
               </Route>
 
-    {/* http://localhost:8090/add-todo */}
-      <Route path='/add-todo' element = {<TodoComponent/>}>
+    {/* http://localhost:3000/add-todo */}
+      <Route path='/add-todo' element = {
+            <AuthenticatedRoute>
+            <TodoComponent/>
+            </AuthenticatedRoute>
+          }>
               </Route>
 
-    {/* http://localhost:8090/update-todo/id */}
-    <Route path='/update-todo/:id' element = {<TodoComponent/>}>
+    {/* http://localhost:3000/update-todo/id */}
+    <Route path='/update-todo/:id' element = {
+          <AuthenticatedRoute>
+          <TodoComponent/>
+          </AuthenticatedRoute>
+        }>
               </Route>
               
-
+    {/* http://localhost:3000/register */}
+    <Route path='/register' element = {<RegisterComponent/>}>
+              </Route>
+    {/* http://localhost:3000/login */}
+    <Route path='/login' element = {<LoginComponent/>}>
+                  </Route>
 
     </Routes>
     <FooterComponent/>

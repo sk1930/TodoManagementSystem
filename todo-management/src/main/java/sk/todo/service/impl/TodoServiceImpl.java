@@ -66,6 +66,14 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public List<TodoDto> getAllTodos() {
 
+        try {
+            Thread.sleep(10000); // added just like that to see behaviour
+            //  in React the state variable todos in listComponent.jsx
+            // on the change of this state variable , the  data is automatically rendered in the table.
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         List<Todo> todos = todoRepository.findAll();
 
         return todos.stream().map((todo) -> modelMapper.map(todo, TodoDto.class))

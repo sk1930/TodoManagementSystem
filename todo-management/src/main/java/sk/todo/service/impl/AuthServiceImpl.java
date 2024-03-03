@@ -72,6 +72,11 @@ public class AuthServiceImpl implements AuthService {
 
     @Override //151. Build Login REST API
     public String login(LoginDto loginDto) {
+        try {
+            Thread.sleep(10000); 
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 loginDto.getUsernameOrEmail(),
                 loginDto.getPassword()

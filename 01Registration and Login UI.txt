@@ -1,0 +1,306 @@
+we'll implement the requirement register and login
+implementation in a react application.
+Well, in previous section we have exposed register and login rest APIs in a spring boot application.
+In this section of the lectures we will see how to consume those register and login rest APIs in a React
+application and build the user interface for register and login feature.
+The user should be able to perform these operations 
+1. user should be able to register to the Todo
+application.
+2. User should be able to log in to Todo application using registered credentials, 
+3. user should be able to log out from the Todo application.
+
+
+
+154. Create RegisterComponent and configure route
+=====================
+
+1. create a functional component named register component.
+2. configure the route for register component in App.jsx.
+3. add a register button to the header.
+And finally, we are going to test all these changes.
+
+1. Goto components folder and create RegisterComponent.jsx Perfect within a RegisterComponent.jsx file.
+Let's create a functional component named register component.
+So just type the command rafce react arrow function component export.
+And there we go.
+We got the code snippet.
+Okay, So this is basically a functional component named register component.
+
+Next step is configure the route for register component.
+So let's go to our project again and go to app.jsx file 
+configure the route for register component.
+
+
+Next step is add a register button to the header.
+So let's go to HeaderComponent.jsx file and add more divs for each nav-item
+
+To do it within the list element, let's call NavLink component from react router dom library.
+So this NavLink is very useful because whenever we want to build the navigation bar or the tabs in
+the header, then we can use this NavLink, component from React router Dom library.
+So this, component will help us to select the currently selected tab.
+Next use to attribute of this NavLink component and let us specify the URL that we want
+to navigate.
+So in this case, we want to navigate to the register page, 
+
+
+here are the development steps.
+1. define the state variables such as name, user name, email and password in our Register
+Component using useState hook.
+2. design the user registration form using HTML and bootstrap classes.
+	row,col,card,card-header,
+				card-body
+					form,
+						row,
+							out of 12 grids for row
+							col-md-3 for label
+							col-md-9 for input field.
+					
+	
+3. create a JavaScript function to handle onClick event.
+4. test the React application 
+
+
+
+156. Connecting React app to register Rest api
+====================
+
+we are going to connect our React application to the Register API and we will send this
+register form data to the register API and register will store this registration form data into database.
+
+1. create a AuthService.js file.
+2. within AuthService  file, we are going to write a rest client code to use the rest API using Axios.
+3. Next we will change register component.
+Within that we will change handle register form method to call auth service method.
+And finally, we are going to test all these changes.
+
+
+157. Create loginnComponent and Configure route
+===================
+
+
+1. create a functional component named LoginComponent.
+2. configure the route for LoginComponent in App.jsx.
+3. add a Login button to the header.
+And finally, we are going to test all these changes.
+
+158. Dsign login form
+=================
+1. define the state variables such as username and password using useState hook.
+2. design the user login form using HTML and bootstrap classes.		
+3. create a JavaScript function to handle onClick event.
+use useNavigate hook to navigate the user after login 
+4. test the React application 
+
+
+
+Implement Basic authentication in react
+============================
+1. In AuthService.jsx Create storeToken and getToken methods to store and get token in local storage.
+
+2. From LoginComponent.jsx create a basic Auth token and store in browser Local storage using storeToken
+
+
+in handleLoginForm(e) 
+Well, whenever a user logged in successfully, then we will create a basic auth token and we will store in a browser local storage.
+const token = 'Basic '+window.btoa(username+":"+password);
+window.btoa
+So this method will basically take the string and then it will convert that string into base64 text.
+
+Store the token using storeToken so that we can getToken later.
+So this is basically called a basic auth token, and we need to pass this basic token in header of Todo related APIs.
+
+
+3. Next step is add Axios interceptor to intercept the request.
+Well, let's go back to our browser and here in a new tab just search for Axios library and hit enter
+and go ahead and click on this first link.
+This will navigate to the Axios documentation.
+
+And here just click on this interceptors and here we can get the sub code.
+https://axios-http.com/docs/interceptors
+
+So here you can see you can intercept the request or responses before they are handled by then or catch
+methods.
+
+And you can see this piece of code.
+// Add a request interceptor
+axios.interceptors.request.use(function (config) {
+    // Do something before request is sent
+    return config;
+  }, function (error) {
+    // Do something with request error
+    return Promise.reject(error);
+  });
+
+// Add a response interceptor
+axios.interceptors.response.use(function (response) {
+    // Any status code that lie within the range of 2xx cause this function to trigger
+    // Do something with response data
+    return response;
+  }, function (error) {
+    // Any status codes that falls outside the range of 2xx cause this function to trigger
+    // Do something with response error
+    return Promise.reject(error);
+  });
+  
+So this piece of code will basically add a request interceptor to intercept the request.
+
+
+Goto TodoService.js and add the interceptors code
+
+
+Well, notice here the comment do something before request is sent.
+Well, we need to add a header for Authorization in the request. and use getToken form AuthService.
+
+Use a different axios instance in AuthService.js
+
+
+
+4. Next step is handle pre-flight request.
+
+
+
+let me explain what is pre-flight request with an example.
+So let us think about a pre-flight request in the context of ATM example.
+Well, banks sometime puts their ATMs inside a room behind the locked doors.
+The door only be unlocked by swiping your ATM card.
+Once you are in.
+Inside, you can walk up to the ATM and withdraw the money.
+The simple act of swiping your card to unlock the door doesn't automatically give you the money, but
+it's quick check to verify that you have a permission to use the ATM, isn't it?
+So in the similar fashion, a pre-flight request, ask for the server's permission to send the request.
+The pre-flight isn't the request itself.
+Instead, it contains the metadata about it, such as which Http method is used, and if the client
+added additional request headers, the server inspect this metadata to decide whether the browser is
+allowed to send the request.
+All right.
+The pre-flight request is basically a request that contains some metadata and it will ask the permission
+for the server to send the next request.
+Okay.
+I hope you understood what is pre-flight request.
+And here, in order to handle the pre-flight request, we need to write the logic in a SpringSecurityConfig.java.
+So in order to understand more about pre-flight request, let's go to network Tab over here.
+And here you can see a couple of pre-flight request and status.
+You can see 401.
+It means our spring boot application is not able to give access to these pre-flight requests because
+we have configured SpringSecurityConfig.java such a way that we have, secured all the requests, isn't
+it?
+So next, in order to handle this kind of pre-flight request, what we need to do is we need to provide
+permission for these requests.
+
+So if you click on one of the pre-flight request and go to headers, you can see the request method
+options.
+Well, we need to basically configure the SpringSecurityConfig.java such a way that we will provide a access or
+permission to all the options request.
+And if you can see the metadata over here, this, you know, pre-flight request basically contains
+which Http method is used and the origin URL and all those stuff.
+Okay.
+So before calling the actual rest API, the browser will send this pre-flight request with some metadata.
+Okay.
+And then server will basically give a permission for this request.
+So as of now we haven't given permission for this pre-flight request.
+So next let us go and let's configure SpringSecurityConfig.java such a way that we will provide a permission to
+all these pre-flight requests.
+
+Go to SpringSecurityConfig.java --- securityFilterChain method.
+// granting permission to all Prefetch requests.
+                            authorize.requestMatchers(HttpMethod.OPTIONS,"/**").permitAll();
+So here let's call authorize object and then request matches.
+The pre-flight request basically contains the request method options.
+So here just call http method. options.
+And second parameter is slash star star and then permit all.
+Now we have handled pre-flight requests in the spring boot application.
+Next, let us go ahead and let us restart the spring boot application.
+
+Login with admin/admin
+admin has role ROLE_ADMIN
+test add todo, delete, complete and incomplete in each of them authorization is passed
+Authorization = Basic YWRtaW46YWRtaW4=
+Goto base 64 decode 
+and on decoding YWRtaW46YWRtaW4=
+you will get admin:admin
+
+The basic auth token is passed in the header.
+
+161. Display the links as per user authentication in the header
+=================================
+1. In AuthService.js create a saveLoggedInUser() method, isUserLoggedIn method and then getLoggedInUser()
+2. change the header to display proper links.
+in headerComponent.js make the links visible based on isAuth
+3. Test 
+
+
+
+1. Well, the difference between local storage and session storage is that local storage don't have a expiration
+date, but the session storage has a expiration date.
+Like whenever we close the browser tab, then all the data will be lost from the session storage.
+So we want to keep the user in our data for one session.
+2. From LoginComponent.jsx call saveLoggedInUser after successful login.
+2. using isAuth control the register, login and todos visibility in the headerComponent.jsx
+
+3. in App.jsx make the default page as Login Component
+{/* http://localhost:3000 */}
+      <Route path='/' element = {<LoginComponent/>}>
+              </Route>
+
+
+window.location.reload();
+        // reload is necessary to reload the headerComponent to hide register and login and display Todos
+
+
+see 161. Display the links as per user authentication in the header
+ in 0ImportantNotesTodo_UI.txt 
+
+async and await are not needed there at all.
+
+
+
+162. create logout method
+=================
+1. create logout() to clear localStorage and sessionStorage
+	and refresh page
+	in AuthService.js
+	
+	Dont refresh page just use useNavigate in logout()
+	if i use refresh page it is redirecting to login from logout()
+	but on refresh it is going back to listTodoComponents page.
+	
+2. Add logout button in headerComponent.jsx
+
+3. test
+
+
+163. Secute the routes in React APP
+===================
+
+even though the user is not logged in,
+we can able to access the list todo's page.
+htpp://localhost:3000/todos
+http://localhost:3000/add-todo
+
+But this is not a correct behavior
+So we need to secure the root.
+
+1. create a AuthenticatedRoute functional component in App.jsx
+
+2. Use AuthenticatedRoutefunctional component to secure the routes
+
+Before routes are like {/* http://localhost:3000/todos */}
+      <Route path='/todos' element = {<ListTodoComponent/>}>
+              </Route>
+
+To secure enclose them 
+<Route path='/todos' element = {
+      <AuthenticatedRoute>
+        <ListTodoComponent/>
+        </AuthenticatedRoute>
+        }>
+              </Route>
+			  
+			  
+But Dont secure Register and LoginComponent Routes
+
+Test:
+Enter htpp://localhost:3000/todos
+http://localhost:3000/add-todo
+
+they will be redirected to htpp://localhost:3000

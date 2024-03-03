@@ -1,3 +1,172 @@
+https://www.w3schools.com/react/react_usestate.asp
+
+https://www.w3schools.com/react/react_useeffect.asp
+
+
+
+setTimeout() is an asynchronous function, meaning that the timer function will not pause execution of other functions in the functions stack.        <!DOCTYPE html>
+        <html>
+        <body>
+
+        <h1>JavaScript Functions</h1>
+        <h2>setInterval() with a Callback</h2>
+
+        <p>Wait 3 seconds (3000 milliseconds) for this page to change.</p>
+
+        <h1 id="demo"></h1>
+
+        <script>
+        setTimeout(function() { myFunction("I love You !!!"); }, 3000);
+
+
+        myFunction("test");
+        function myFunction(value) {
+        document.getElementById("demo").innerHTML = value;
+        }
+        </script>
+
+        </body>
+        </html>
+
+
+        output:
+        ==========
+        initial output
+        ===============
+        JavaScript Functions
+        setInterval() with a Callback
+        Wait 3 seconds (3000 milliseconds) for this page to change.
+        test
+
+
+        Final output
+        =================
+        JavaScript Functions
+        setInterval() with a Callback
+        Wait 3 seconds (3000 milliseconds) for this page to change.
+        I love You !!!
+
+
+useState and useEffect
+===================
+
+
+import { useState, useEffect } from "react";
+import ReactDOM from "react-dom/client";
+
+function Timer() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setCount((count) => count + 1);
+    }, 1000);
+  }, []); // <- add empty brackets here
+  
+  return <h1>I've rendered {count} times!</h1>;
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<Timer />);
+
+Here as we gave [] empty list as dependencies useEffect runs once on initial render from Timer() call
+and it has setTimeout which is asynchronous
+So
+initial output
+Ive rendered 0 times
+
+and as count is a state variable which is updated from useEffect
+the output changes on change of count state variable.
+ive rendered 1 times.
+
+======================
+161. Display the links as per user authentication in the header
+see above heading in 01Registration and Login UI
+
+in getAllTodos API in springBoot
+
+        try {
+            Thread.sleep(10000); // added just like that to see behaviour
+            //  in React the state variable todos in ListTodoComponent.jsx
+            // on the change of this state variable , the  data is automatically rendered in the table.
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+I have added sleep to see its effect in ListTodoComponent.jsx
+in ListTodoComponent.jsx there is a state variable todos,setTodos
+
+
+  
+Here as we gave [] empty list as dependencies useEffect runs once on initial render
+it calls listTodos. in listTodos there is getAllTodos which is asynchronous call,
+once response is received from getAllTodos it updates the todos state variable. On todos state variable update
+it automatically updates the table data.
+initial output
+table with empty data.
+
+the output changes on change of todos state variable.
+
+
+=========================
+Without async and await 
+in function handleLoginForm(e){
+LoginComponent.jsx
+
+in AuthServiceImpl.java - Login also i put sleep
+so login takes time to give reposnse
+and here as login call is made asynchronously, here i see am after loginApiCall which is ....
+is executed first asynchronously 
+
+Here initially 
+1st LoginComponent.jsx is called
+        in logincomponent loginAPICall is called asynchronously
+            from loginAPICall it calls     return axios.post(AUTH_REST_API_BASE_URL+'/login',{usernameOrEmail,password});
+                    but in AuthServiceImpl.java i put sleep for 10 secs 
+                So till the time the loginAPICall IN LoginComponent is called back
+        It asynchronously excecute the after code which is     console.log("am after loginApiCall which is after and I execute first if this is asynchronous call")
+
+        and once the call back is made from axio.post
+            control is back to loginAPICall
+
+
+handleLoginForm:
+{
+    username: "test1234567",
+password: "123456"}
+AuthService.js : loginAPICall: 
+am here in loginApiCall
+AuthService.js:39 test1234567
+LoginComponent.jsx:35 am after loginApiCall which is after and I execute first if this is asynchronous call
+LoginComponent.jsx:23 seems i didnt print first  I waited after loginAPICall is called back from axios
+LoginComponent.jsx:24 User loggedin Successfully
+
+test1234567
+2TodoService.js:63 Basic dGVzdDEyMzQ1Njc6MTIzNDU2
+
+========================
+Without async and await 
+in function handleLoginForm(e){
+LoginComponent.jsx
+
+
+handleLoginForm:
+{
+    username: "test1234567",
+password: "123456"}
+AuthService.js:37 loginAPICall: am here in loginApiCall
+AuthService.js:39 test1234567
+LoginComponent.jsx:48 this time loginAPICall is not executed asynchronously  and control waits here untill callback is made for loginAPICall
+LoginComponent.jsx:49 User loggedin Successfully
+AuthService.ks:60 test1234567
+LoginComponent.jsx:60 am after loginApiCall which is after and I execute last as if this is asynchronous call
+2TodoService.js:63 Basic dGVzdDEyMzQ1Njc6MTIzNDU2
+
+
+
+
+
+
+
 package.json
 ============
 Well, within a package.json file, we can configure all the dependencies and scripts that are required for our React application.
@@ -191,3 +360,38 @@ So here just call setTodos and then response dot data.
 Perfect.
 Next, we can also have a catch block and then we can display the error.
 So here let's have a error object and then arrow function and then console.error and then pass error object.
+
+
+NAavLink
+=============
+Next step is add a register button to the header.
+So let's go to HeaderComponent.jsx file and add more divs for each nav-item
+
+To do it within the list element, let's call NavLink component from react router dom library.
+So this NavLink is very useful because whenever we want to build the navigation bar or the tabs in
+the header, then we can use this NavLink, component from React router Dom library.
+So this, component will help us to select the currently selected tab.
+Next use to attribute of this NavLink component and let us specify the URL that we want
+to navigate.
+So in this case, we want to navigate to the register page, 
+
+for rows we use space row mb-3, for columns use - col-md-3
+<div className='row mb-3'>
+                                <label className='col-md-3
+
+
+
+The logical AND expression is a short-circuit operator. As each operand is converted to a boolean, if the result of one conversion is found to be false, the AND operator stops and returns the original value of that falsy operand; it does not evaluate any of the remaining operands.
+function A() {
+  console.log("called A");
+  return false;
+}
+function B() {
+  console.log("called B");
+  return true;
+}
+
+console.log(A() && B());
+// Logs "called A" to the console due to the call for function A,
+// && evaluates to false (function A returns false), then false is logged to the console;
+// the AND operator short-circuits here and ignores function B
