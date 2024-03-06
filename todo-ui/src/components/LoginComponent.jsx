@@ -23,7 +23,12 @@ function handleLoginForm(e){
     loginAPICall(username,password).then((response)=>{
         console.log("seems i didnt print first I waited after loginAPICall is called back from axios ");
         console.log(response.data);
-        const token = 'Basic '+window.btoa(username+":"+password);
+        /* const token = 'Basic '+window.btoa(username+":"+password);
+        this is for Basic authentication
+        For Jwt token based authentication we have to use Bearer + token from the response
+        */
+       const token = 'Bearer '+response.data.accessToken;
+
         saveLoggedInUser(username);
 
         storeToken(token);

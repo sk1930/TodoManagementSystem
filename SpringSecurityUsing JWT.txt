@@ -1,0 +1,456 @@
+Section
+================
+In this section of the lectures we are going to secure rest APIs using JWT.
+JWT stands for Json web token.
+Well, so far we have secured the rest APIs using basic auth.
+So basic auth is not a standard way to secure the rest APIs.
+So in this section of the lectures we will secure the Springboot rest APIs using Spring Security and
+JWT, and we will also see how to use JWT token in a React application to consume the secured rest APIs.
+
+
+JWT introduction
+===============
+
+what is JWT.
+===============
+JWT stands for Json Web token, which is open standard that defines a compact and self-contained way
+for securely transmitting information between parties as a Json object.
+JWT is a standard that is mostly used for securing rest APIs.
+And JWT is the best way to communicate securely between client and server.
+The important point about JWT is that JWT follows stateless authentication mechanism.
+It means that we can implement JWT authentication entirely stateless without having to store any session
+information on the server side.
+
+
+when should you use Json web tokens?
+============
+Well, here are some scenarios where Json web tokens are useful.
+For example, authorization and information exchange authorization is a most common scenario for using
+JWT.
+	So once the user is logged in, then each subsequent request will include JWT in a header section which
+	allows user to access a resources that are permitted.
+	With that token.
+	Well, single sign on is a feature that widely uses JWT nowadays.
+And in case of information exchange, Json web tokens are a good way of securely transferring information
+between client and server.
+
+
+what is Json web token structure.
+=========
+Well, Json web tokens consist of three parts separated by a dot.
+For example, look at here, this is the JWT that is Json web token and it consists of three parts separated
+by Dot.
+The first part is called header.
+second part is called payload.
+third part is called signature.
+And look at the image JSONWebTokenStructure , this is the real example for Json web token.
+
+
+header contains two parts.
+So first part is algorithm being used and second part is the type of the token that is JWT.
+
+payload contains a claim information.
+So claims means here the statement about an entity or a user and the additional data.
+
+This payload contains information about the user that is username and user role details and then subject.
+
+signature.
+Well, to create a signature, we have to take the encoded header and encoded payload and a secret key.
+
+Base64Urlencode(header)
+base64Urlencode(payload)
+secret key
+
+and we can also use the algorithms specified
+in the header of the token.
+
+Let's understand about this JWT structure by looking into the official website of JWT.
+So go to the JWT official website - https://jwt.io/
+Click on debugger page. and there is an example 
+And here you can see this is a very, very useful debugger page in which you can play with Json web
+token.
+For example, look at here, this is the encoded part and this is decoded part.
+You can put your JWT that is token in this section and you can decode it here in this section.
+
+how JWT works
+============
+Well, we have a client side application and server side application 
+client calls POST /authenticate rest API with username and password and
+server will validate the username and password.
+Well, if username and password is valid then server will generate a JWT using secret key and server will basically return this JWT as a part of the response of the rest API.
+
+Once client get JWT from the server then it will use JWT in each and every subsequent request.
+For example, if client wants to call /hello rest api, then client should pass JWT in header of /Hello rest api
+So let's say client pass JWT in header of /Hello rest api .
+Then server will basically process the request and it validate JWT using the same secret key.
+And if the JWT token is valid.
+Then it will return a success response to the client.
+of that rest API.
+
+167. Sprint Security JWT overview
+============
+
+Before implementing JWT in our spring security application.
+Let's take a look into what is the disadvantage of using spring security basic authentication.
+Well, in case of basic authentication, we need to pass hardcoded username and password in a header
+of each and every request.
+We have to pass hardcoded username and password in a header of each and every API.
+This is a disadvantage of basic authentication.
+
+For example, if we want client want to call one, then client should pass hardcoded username and password
+in header of rest API one request.
+And similarly, if client want to call rest API two, then client should pass hardcoded username and
+password in header of rest API two request.
+This is the disadvantage of using basic auth.
+
+
+Now let's take a look into how to use JWT in spring security.
+Consider we have a server side application that is spring boot application and we have a client side
+application.
+So client will basically call the login API and it will pass username and password.
+So server will validate the username and password.
+If username and password are valid, then server will basically generate a JWT token and it will send
+as a part of response of login API to the client.
+
+So once client will get JWT token from the server, then client should pass this JWT token in a header
+of each and every subsequent request.
+For example, once client get JWT token, then a client want to call rest API one then client should
+pass JWT in a header of rest API one request.
+Similarly, a client want to call rest API two then client should pass token in a header of rest api
+two request.
+
+So instead of passing hardcoded username and password, we can use JWT token based token authentication.
+
+
+168. Adding JWT to spring Boot App
+=====================
+
+1. add all the JWT related Marvin dependencies.
+2. create JwtAuthenticationEntryPoint class  implementing AuthenticationEntryPoint interface
+where we will create this class to handle the unauthorized exception.
+When unauthenticated user tries to access the resource, then our application
+throws the exception and we will use this JwtAuthenticationEntryPoint class to handle the exception and return the error response back to the client.
+3. add JWT properties in Application.properties file.
+4. create JwtTokenProvider - utility class
+we are creating in security Package.
+
+To create utility methods related to JWT.
+For example, generate token, get username from the token, validate the token,.
+5. create a JwtAuthenticationFilter.
+So this filter is responsible to authenticate the user based on the JWT token.
+6. create JwtAuthResponse DTO class to return the JWT token back to the client.
+7. configure JWT in a spring security.
+8. change login  rest API to return the JWT token.
+
+
+1. So first step is we need to add JWT related maven dependencies.
+So here I am in a Chrome browser in a new tab, just type JWT maven dependency hit enter and go ahead
+and click on https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
+
+And notice here, this artifact was moved to this location, so go ahead and click on this JWT API.
+https://mvnrepository.com/artifact/io.jsonwebtoken
+
+So go ahead and click on this link and we are going to add three dependencies that is JWT impl, JWT API, JWT: extensions:Jackson
+
+Click on each of them and open latest versions and add to pom.xml dependencies
+
+JWT impl - So next right click and open this in a new tab and go to 0.12.5 and just copy this dependency and let's
+go to our project in IntelliJ idea.
+<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-impl -->
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.12.5</version>
+    <scope>runtime</scope>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api -->
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-api</artifactId>
+    <version>0.12.5</version>
+</dependency>
+
+
+<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson -->
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId>
+    <version>0.12.5</version>
+    <scope>runtime</scope>
+</dependency>
+
+
+click on this Maven load changes icon over here.
+So this will load all these dependencies.
+
+2. Next create JwtAuthenticationEntryPoint class.
+So let's go to our project and go to security package over here.
+And within a security package, let's create a Java class.
+Let's give a name as JwtAuthenticationEntryPoint.
+
+This class implements AuthenticationEntryPoint interface and this interface provides commence method
+So let's implement this commence method in JwtAuthenticationEntryPoint class.
+
+
+annotate this class with 
+@component annotation to make this class as a spring
+component or spring bean.
+this commence method is called whenever an exception is thrown due to an unauthorized user trying
+to access a resource that requires an authentication.
+So here within the commence method, we'll have a response object.
+So let's add a error to this response object.
+So here response.sendError.
+Next, let's pass the values for code and message.
+
+
+It handles the exception that is thrown due to unauthorized user trying to access a resource that requires
+an authentication.
+
+
+
+Next step is.
+We'll add a couple of JWT properties in the application.properties file.
+ADD SECRET key by using sha-256 encryption using any online tool and expiration time
+
+
+
+4. create JwtTokenProvider - utility class
+we are creating in security Package.
+
+To create utility methods related to JWT.
+For example, generate token, get username from the token, validate the token,.
+
+
+And let's make this class as a spring component by annotating it with @Component annotation.
+we need to get the value of JWT properties.
+For example, if we go to application.properties file here we have configured two JWT related properties
+JWT Secret key and expiration time.
+
+So in order to fetch the property value, we can use @value annotation.
+
+create the methods generateJwtToken.
+	within this method let's get the username from the authentication object.
+	So this get name will return the username or email.
+	So basically we have provided an option to the user. User can use either username or email to login to the application isn't it?
+	So here this user field may contain username or email.
+	
+	Next, let's call this key method in a signWith method.compact()
+	So this compact method will club all these parameters and it will create the JWT token.
+
+	
+Create key()
+	And this JWT secret in a encrypted format, for example, if you go to Application.properties file here, you can see JWT secret key encrypted format. We need to decode it. So let's go back to JWT token provider over here and go to key method.
+Create getUsername
+	returns a username from the token.
+Create validateToken
+	Now we have written a validate JWT token utility method that validates a given JWT token.
+
+
+
+5. create a JwtAuthenticationFilter.
+So this filter is responsible to authenticate the user based on the JWT token.
+
+
+That is, we will create a JwtAuthenticationFilter to authenticate the JWT token.
+In Security package. Create JwtAuthenticationFilter and this class extends OncePerRequestFilter
+So this class basically provides execution for per request.
+and this class provides a doFilterInternal method.
+
+
+So before implementing this method, let's inject a couple of dependencies.
+So here private  JwtTokenProvider.
+private UserDetailsService.
+Next, let's use constructor based dependency injection to inject these two dependencies.
+  lets generate the constructor for these two fields.
+
+Add @Component annotation
+to make this class as a spring bean.
+
+
+Next we'll implement this doFilterInternal method.
+ get the JWT token from the request.
+Well, if you go to postman client, we'll basically pass the JWT token in a header, right?
+And in order to pass the JWT token in a postman client, we use this authorization tab and here we have
+different types of, you know, authorization types.
+And here in case of JWT, we need to use a bearer token.
+And here we need to pass the JWT token.
+And if you can notice here in the headers, if you go to headers and go to key value here, so key is
+authorization and value is bearer and then followed by the JWT token.
+So basically in a request header, we will get a key as authorization and value as a JWT token.
+And this JWT token contains two parts.
+First is bearer and followed by the JWT token.
+Okay, so let's go ahead and let's write the logic to get this JWT token from the header by using this
+authorization  as key.
+
+So in order to get the token from the Http request, I am going to create one private method getTokenFromRequest .
+And let's pass Http servlet request and let's call it as request.
+So this HttpServletRequest object contains basically a header.
+From that header We are going to get the JWT token.
+
+
+Next, what we will do will validate this JWT token.
+
+So let me go back to authorization filter over here.
+So here let's add the condition to validate the token.
+So before validating the token, let's see whether this token is null or empty.
+For that let's have a string utils class from spring framework and then it has has text.
+So just pass token to it.
+ next within this if condition, we'll get the username from the token.
+And next we have user detail service.
+It has load user by username method.
+So let's use this method to load the user from the database by using username.
+So let's pass username.
+Perfect.
+Now we got the user details object.
+It contains username, password and authorities next.
+
+
+171. Configure JWT in Spring Security
+=================
+
+
+in this lecture we are going to focus on creating JwtAuthResponse Dto class and we will configure
+the JWT in spring security.
+
+
+In Dto package JwtAuthResponse.java
+	Next, instead of creating the getter setter methods and constructor manually, let's use lombok connotations.
+
+	@Setter
+	@Getter
+	@AllArgsConstructor
+	@NoArgsConstructor 
+
+	So this class we are going to use in a login rest API.
+
+Next step is configure JWT in a spring security.
+
+	Earlier we have created JwtAuthenticationEntryPoint class and JwtAauthenticationFilter.
+	We need to configure these two classes with SpringSsecurityConfig.java
+	Go to spring security config class and here let us first inject JWT related classes.
+		    private JwtAuthenticationEntryPoint authenticationEntryPoint;
+    private JwtAuthenticationFilter authenticationFilter;
+	
+	here we haven't created the constructor manually.
+	We are using Lombok annotation to create the constructor.
+	
+	Next go to securityFilterChain method over here.
+	before the return statement add http.exceptionHandling and it expects a lambda expression.
+	So this exception object has authenticationEntrypoint method.
+	So let us call this method and then pass jwtAuthenticationEntryPoint object.
+	
+	So whenever unauthenticated user tries to access the resource, then spring security throws authentication exception and then JwtAuthenticationEntryPoint class will catch that exception and return the error response to the client.
+	
+	
+	Next, let's go back to the SpringSecurityConfig class and securityFilterChain method 
+	
+	And next, we have JwtAuthenticationfilter.
+	Well, this filter should execute before executing spring security filters
+	because all the JWT related,  logic is written in this filter.
+	So we have to configure this filter such a way that this filter should execute before executing spring
+	security filters.
+So let's go back to the spring security class over here.
+	And here let us call the Http object and then it has add filter before method.
+	So we can use this method to add a,  JwtAuthenticationfilter before spring security filters.
+	So let us call this method and then pass authentication filter.
+	So this authentication filter is nothing but a JwtAuthenticationfilter.
+	Next, this filter should execute before username password authentication filter.
+
+
+Next step is change login rest API to return JWT token.
+
+
+172. Change Login REST API to Return JWT Token
+=======================================
+
+In previous lecture we have created JwtAuthResponse Dto class and we have also configured JWT spring security.
+In this lecture we are going to change login rest API to return the JWT token.
+So let's go to our project in idea and go to AuthServiceImpl service class over here and go to login method.
+So here within a login method we are going to generate the token and we will return that JWT token to
+the login API.
+    private JwtTokenProvider jwtTokenProvider;
+
+	So this JWT token provider class has a utility method that is generateToken
+Next, let's go to login method over here and within the login method let's declare a local variable
+	string token equal to and then call JWT token provider.
+	It has generate token method and then pass authentication object.
+let us return this JWT token.
+So here, remove this statement and then just return the token.
+
+Next let us go to AuthController.java and go to login method over here and here let us go ahead and let
+	us return the JwtAuthResponse DTO  class.
+	So here, let us change the type.
+	So just pass JwtAuthResponse DTO class as a type.
+	And next here let us create an object of JwtAuthResponse DTO class.
+
+
+Now we have changed login API to return the JWT token.
+Next, let us go ahead and let us run our springboot application and let us test this login API.
+	So from here I am going to start the springboot application.
+	Well, our spring boot application is up and running.
+	Next, let's go to postman client over here.
+	And here post: 
+	http://localhost:8090/api/auth/login
+	authentication was None and in body {
+	"usernameOrEmail":"test1234567",
+	"password":"123456"
+	} 
+	u get the response as 
+	{
+		"accessToken": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ0ZXN0MTIzNDU2NyIsImlhdCI6MTcwOTY3MTkxMCwiZXhwIjoxNzA5Njc1NTEwfQ.0v_oLJ8ndWuyP1YTtQ0tmnU0cXH83j8jYghLYyt5XyNqr-MmRHTcpN11IiwmwhTn",
+		"tokenType": "Bearer"
+	}
+
+
+	This is the JWT token and the token type is bearer.
+	It means we have successfully changed the login rest API to return the JWT token.
+	Next, in order to access to the related APIs, we have to pass the JWT token in a header.
+	For example, let me copy this JWT token and notice here this JWT token is created for the user.
+	test1234567/123456 Okay.
+
+
+	Goto GetAllTodos post man 
+	in authentication change to Bearer and give the token 
+	earlier it was Basic Authentication with username and password.
+	Next, go ahead and click on send button.
+	You will get the response
+
+	Goto add toDo Api 
+	with  the bearer token from the login of test1234567
+	We'll notice here we got the response with status code 401 unauthorized because the test1234567 user don't
+	have access to create todo.
+	That's why here we are getting the response 401.
+	Unauthorized.
+
+
+	only admin user can access create Todo Rest API, 
+	log in with the admin/admin 
+	So this is the JWT token for admin user.
+	So let us copy this token and go to create post request.
+	And there we go, the create Todo return the response that is 201 created status code and the saved 
+	do object in a response.
+	All right, so only the admin user can able to access the create to do rest API.
+
+	Okay, so this is how we can secure the rest API using JWT authentication token.
+
+
+173. Using JWT Token in React App
+=======================
+In previous couple of lectures we have implemented JWT in a spring boot backend application.
+In this lecture, let us see how to use JWT token in a React application.
+
+In VS code go to loginComponent.jsx file go to login component,
+go to and login form method over here And notice here earlier we are creating the basic  token 
+
+Now we need to change this basic token to JWT token.
+       const token = 'Bearer '+response.data.accessToken;
+
+Test the application 
+goto browser 
+login with admin/admin and u will be able to perform create, delete, update
+
+login with test1234567/123456 and u will be able to perform only complete/incomplete requests and view the list of Todos.
+you cannot create/delete and in console you can see 
+401 Axios error
+Request failed with status code 401

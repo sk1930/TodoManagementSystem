@@ -1,9 +1,8 @@
 // this is for Method level security
-//and uses JWT based authentication which is based on a secret key in JwtTokenProvider
+//and uses Basic Authentication which is just username and password
 
 package sk.todo.config;
 
-import ch.qos.logback.core.encoder.Encoder;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,28 +12,20 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import sk.todo.security.JwtAuthenticationEntryPoint;
-import sk.todo.security.JwtAuthenticationFilter;
+import org.springframework.security.web.SecurityFilterChain;
 
 
 @Configuration
 @EnableMethodSecurity // for method security
 @AllArgsConstructor
-public class SpringSecurityConfig {
+public class SpringSecurityConfig2 {
 
 
     private UserDetailsService userDetailsService;
     // to inject CustomUserDetailsService using AllArgsConstructor
-    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private JwtAuthenticationFilter authenticationFilter;
 
 
     //let us annotate this method with @Bean annotation so that spring container maintain the object
@@ -104,9 +95,6 @@ public class SpringSecurityConfig {
                 ).httpBasic(Customizer.withDefaults());
 
          */
-        http.exceptionHandling(exception -> exception
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint));
-        http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

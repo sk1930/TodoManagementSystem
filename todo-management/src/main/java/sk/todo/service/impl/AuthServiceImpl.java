@@ -15,6 +15,7 @@ import sk.todo.entity.User;
 import sk.todo.exception.TodoAPIException;
 import sk.todo.repository.RoleRepository;
 import sk.todo.repository.UserRepository;
+import sk.todo.security.JwtTokenProvider;
 import sk.todo.service.AuthService;
 
 import java.util.HashSet;
@@ -37,6 +38,10 @@ public class AuthServiceImpl implements AuthService {
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
     private AuthenticationManager authenticationManager;
+    //172. Change Login REST API to Return JWT Token
+    private JwtTokenProvider jwtTokenProvider;
+
+
 
     @Override
     public String register(RegisterDto registerDto) {
@@ -82,6 +87,8 @@ public class AuthServiceImpl implements AuthService {
                 loginDto.getPassword()
         ));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return "User loggedin Successfully";
+        String token = jwtTokenProvider.generateJwtToken(authentication);
+        //return "User loggedin Successfully";
+        return token;
     }
 }
