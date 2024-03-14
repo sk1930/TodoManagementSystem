@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import sk.todo.dto.JwtAuthResponse;
 import sk.todo.dto.LoginDto;
 import sk.todo.dto.RegisterDto;
 import sk.todo.entity.Role;
@@ -19,6 +20,7 @@ import sk.todo.security.JwtTokenProvider;
 import sk.todo.service.AuthService;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -75,6 +77,10 @@ public class AuthServiceImpl implements AuthService {
         return "User Registered Successfully!.";
     }
 
+    /*  this is for login rest API where it returns the token alone
+    Below added code  to return role along with token
+    and the slpeep code is just added to test the promises and callbacks in react so removing it as well
+
     @Override //151. Build Login REST API
     public String login(LoginDto loginDto) {
         try {
@@ -91,4 +97,35 @@ public class AuthServiceImpl implements AuthService {
         //return "User loggedin Successfully";
         return token;
     }
+    */
+    // above returns token only here am returning role as well
+    @Override //151. Build Login REST API
+    public JwtAuthResponse login(LoginDto loginDto) {
+
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                loginDto.getUsernameOrEmail(),
+                loginDto.getPassword()
+        ));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token = jwtTokenProvider.generateJwtToken(authentication);
+
+        String role = null;
+        Optional<User> useroptional =userRepository.findByUsernameOrEmail(loginDto.getUsernameOrEmail(),loginDto.getUsernameOrEmail());
+        if(useroptional.isPresent()){
+            User loggedInUser = useroptional.get();
+            Optional<Role> optionalRole = loggedInUser.getRoles().stream().findFirst();
+            if(optionalRole.isPresent()){
+                Role userRole = optionalRole.get();
+                role = userRole.getName();
+
+            }
+        }
+        JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
+        jwtAuthResponse.setRole(role);
+        jwtAuthResponse.setAccessToken(token);
+
+        //return "User loggedin Successfully";
+        return jwtAuthResponse;
+    }
+
 }

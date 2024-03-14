@@ -28,8 +28,9 @@ function handleLoginForm(e){
         For Jwt token based authentication we have to use Bearer + token from the response
         */
        const token = 'Bearer '+response.data.accessToken;
-
-        saveLoggedInUser(username);
+    
+       const role = response.data.role;
+        saveLoggedInUser(username,role);
 
         storeToken(token);
         navigator("/todos")

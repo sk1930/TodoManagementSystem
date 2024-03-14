@@ -454,3 +454,53 @@ login with test1234567/123456 and u will be able to perform only complete/incomp
 you cannot create/delete and in console you can see 
 401 Axios error
 Request failed with status code 401
+
+
+
+Section: Role based access control - Spring Boot Backend and React Front end
+===================================
+
+175. Change Login Rest Api to return role along with token
+=============================
+1. Add variable for dto.JwtAuthResponse
+2. add role to login response and return JwtAuthResponse object
+	from service.impl.AuthServiceImpl
+	change return type from string to JwtAuthResponse 
+3. change return type from string to JwtAuthResponse in service.AuthService
+4. AuthController.java -- -login method
+5. Test from postman
+In postman
+
+curl --location 'http://localhost:8090/api/auth/login' \
+--header 'Content-Type: application/json' \
+--data '{
+"usernameOrEmail":"admin",
+"password":"admin"
+}
+'
+
+response {
+    "accessToken": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcxMDI1NjgwOCwiZXhwIjoxNzEwMjYwNDA4fQ.cAaQAHsQIsyEPE2JrBANDTDKi8CLd7t2N4qOJM-FYOm49eKumwHfr4jgmqmg2sbe",
+    "tokenType": "Bearer",
+    "role": "ROLE_ADMIN"
+}
+
+Test 2: {
+"usernameOrEmail":"test1234567",
+"password":"123456"
+}
+returns ROLE_USER
+
+
+176. Implement Role-Based Access Feature in React App
+===============================
+
+
+1) change LoginComponent.handleLoginForm method in a login component to get the role from the response of the login API.
+2. change AuthService.saveLoggedInUser method to save the user name and role in a session storage.
+3. create isAdminUser() in Authervice to check whether the logged-in user is admin or not.
+4. display the buttons(add todo, update todo, delete todo) based on the user role in a ListTodo component.
+by using isAdmin && 
+&& in javascript is shortcircuiting operator
+5.Test Changes
+

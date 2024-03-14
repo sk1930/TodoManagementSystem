@@ -24,12 +24,25 @@ public class AuthController {
         String response = authService.register(registerDto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
+
+
+    /* Before 175. Change Login Rest Api to return role along with token
+    we only returned the token.
     @PostMapping("/login")
     public ResponseEntity<JwtAuthResponse> login(@RequestBody LoginDto loginDto){
         String token = authService.login(loginDto);
 
         JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
         jwtAuthResponse.setAccessToken(token);;
+
+        return new ResponseEntity<>(jwtAuthResponse, HttpStatus.OK);
+    }*/
+
+    // Before 175. Change Login Rest Api to return role along with token
+    @PostMapping("/login")
+    public ResponseEntity<JwtAuthResponse> login(@RequestBody LoginDto loginDto){
+        JwtAuthResponse jwtAuthResponse = authService.login(loginDto);
 
         return new ResponseEntity<>(jwtAuthResponse, HttpStatus.OK);
     }
